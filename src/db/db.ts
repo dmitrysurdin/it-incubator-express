@@ -1,4 +1,4 @@
-import { Blog } from '../blogs/types/blog.types';
+import { Blog } from '../blogs/blog.types';
 
 interface DBType {
 	blogs: Array<Blog>;
