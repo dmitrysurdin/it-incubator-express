@@ -1,17 +1,25 @@
-import { body, ValidationError, validationResult } from 'express-validator';
-import { NextFunction, Request, Response } from 'express';
+import { body } from 'express-validator';
 
-const titleValidator = body('title').isString().isLength({ max: 30 }).withMessage('Invalid title');
+const titleValidator = body('title')
+	.isString()
+	.withMessage('Invalid format')
+	.trim()
+	.isLength({ min: 1, max: 30 })
+	.withMessage('Invalid length');
 
 const shortDescriptionValidator = body('shortDescription')
 	.isString()
-	.isLength({ max: 100 })
-	.withMessage('Invalid short description');
+	.withMessage('Should be a string')
+	.trim()
+	.isLength({ min: 1, max: 100 })
+	.withMessage('Invalid length');
 
 const contentValidator = body('content')
 	.isString()
-	.isLength({ max: 1000 })
-	.withMessage('Invalid content');
+	.withMessage('Should be a string')
+	.trim()
+	.isLength({ min: 1, max: 1000 })
+	.withMessage('Invalid length');
 
 const blogIdValidator = body('blogId').isString().withMessage('Invalid blogId');
 
@@ -24,25 +32,3 @@ export const postInputValidators = [
 	blogIdValidator,
 	nameValidator,
 ];
-
-export const postInputCheckErrorsMiddleware = (
-	req: Request,
-	res: Response,
-	next: NextFunction,
-): void => {
-	const errorResult = validationResult(req)
-		.formatWith((error: ValidationError) => {
-			return {
-				message: error.msg,
-				field: error.type === 'field' ? error.path : null,
-			};
-		})
-		.array({ onlyFirstError: true }); // Получаем только первую ошибку для каждого поля
-
-	if (errorResult.length) {
-		res.status(400).json({ errorsMessages: errorResult });
-		return;
-	}
-
-	next();
-};

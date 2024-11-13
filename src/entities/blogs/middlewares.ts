@@ -1,39 +1,26 @@
-import { body, ValidationError, validationResult } from 'express-validator';
-import { NextFunction, Request, Response } from 'express';
+import { body } from 'express-validator';
 
-const nameValidator = body('name').isString().isLength({ max: 15 }).withMessage('Invalid name');
+const nameValidator = body('name')
+	.isString()
+	.withMessage('Should be a string')
+	.trim()
+	.isLength({ min: 1, max: 15 })
+	.withMessage('Invalid length');
 
 const descriptionValidator = body('description')
 	.isString()
-	.isLength({ max: 500 })
-	.withMessage('Invalid Description');
+	.withMessage('Should be a string')
+	.trim()
+	.isLength({ min: 1, max: 500 })
+	.withMessage('Invalid length');
 
 const websiteUrlValidator = body('websiteUrl')
 	.isString()
+	.withMessage('Should be a string')
+	.trim()
 	.matches(/^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/)
-	.isLength({ max: 100 })
-	.withMessage('Invalid Website URL');
+	.withMessage('Invalid URL format')
+	.isLength({ min: 1, max: 100 })
+	.withMessage('Invalid length');
 
 export const blogInputValidators = [nameValidator, descriptionValidator, websiteUrlValidator];
-
-export const blogInputCheckErrorsMiddleware = (
-	req: Request,
-	res: Response,
-	next: NextFunction,
-): void => {
-	const errorResult = validationResult(req)
-		.formatWith((error: ValidationError) => {
-			return {
-				message: error.msg,
-				field: error.type === 'field' ? error.path : null,
-			};
-		})
-		.array({ onlyFirstError: true }); // Получаем только первую ошибку для каждого поля
-
-	if (errorResult.length) {
-		res.status(400).json({ errorsMessages: errorResult });
-		return;
-	}
-
-	next();
-};
