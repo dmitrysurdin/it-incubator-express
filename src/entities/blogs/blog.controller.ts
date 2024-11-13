@@ -1,6 +1,6 @@
 import { Blog } from './blog.types';
 import { Request, Response } from 'express';
-import { blogRepository } from './blog.repository';
+import { blogRepositories } from './blog.repository';
 
 export const create = (req: Request, res: Response): void => {
 	const newBlog: Blog = {
@@ -14,14 +14,14 @@ export const create = (req: Request, res: Response): void => {
 		res.status(400).json({ errorsMessages });
 	}
 
-	blogRepository.create(newBlog);
+	blogRepositories.create(newBlog);
 
 	res.status(201).json(newBlog);
 };
 
 export const remove = (req: Request, res: Response): void => {
 	const id = req.params.id;
-	const isDeleted = blogRepository.remove(id);
+	const isDeleted = blogRepositories.remove(id);
 
 	if (!isDeleted) {
 		res.sendStatus(404);
@@ -32,7 +32,7 @@ export const remove = (req: Request, res: Response): void => {
 
 export const findById = (req: Request, res: Response): void => {
 	const id = req.params.id;
-	const blog = blogRepository.findById(id);
+	const blog = blogRepositories.findById(id);
 
 	if (!blog) {
 		res.sendStatus(404);
@@ -44,7 +44,7 @@ export const findById = (req: Request, res: Response): void => {
 };
 
 export const getAll = (req: Request, res: Response): void => {
-	const blogs = blogRepository.getAll();
+	const blogs = blogRepositories.getAll();
 
 	res.status(200).json(blogs);
 };
@@ -53,13 +53,7 @@ export const update = (req: Request, res: Response): void => {
 	const id = req.params.id;
 	const blog = req.body;
 
-	const errorsMessages: any = [];
-
-	if (errorsMessages.length) {
-		res.status(400).json({ errorsMessages });
-	}
-
-	const isUpdated = blogRepository.update(id, blog);
+	const isUpdated = blogRepositories.update(id, blog);
 
 	if (isUpdated) {
 		res.sendStatus(204);
@@ -70,7 +64,7 @@ export const update = (req: Request, res: Response): void => {
 	res.sendStatus(404);
 };
 
-export const blogController = {
+export const blogControllers = {
 	getAll,
 	findById,
 	create,

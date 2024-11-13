@@ -1,5 +1,5 @@
 import { Blog } from './blog.types';
-import { dbData } from '../db/db';
+import { dbData } from '../../db/db';
 
 const create = (blog: Blog): void => {
 	dbData.blogs = [...dbData.blogs, blog];
@@ -39,7 +39,7 @@ const remove = (id: string): boolean => {
 	return true;
 };
 
-export const blogRepository = {
+export const blogRepositories = {
 	create,
 	getAll,
 	findById,

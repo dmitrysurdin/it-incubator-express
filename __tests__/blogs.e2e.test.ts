@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { app } from '../src/app';
-import { blogRepository } from '../src/blogs/repositories/blogRepository';
+import { blogRepository } from '../src/entities/blogs/repositories/blogRepository';
 import { SETTINGS } from '../src/settings';
 
 describe('Video API e2e tests', () => {
