@@ -37,7 +37,7 @@ export const postInputCheckErrorsMiddleware = (
 				field: error.type === 'field' ? error.path : null,
 			};
 		})
-		.array({ onlyFirstError: true }); // Получаем только первую ошибку для каждого поля
+		.array({ onlyFirstError: true });
 
 	if (errorResult.length) {
 		res.status(400).json({ errorsMessages: errorResult });
