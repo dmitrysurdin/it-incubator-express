@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "lesson-1",
+  "name": "lesson-2",
   "builds": [
     {
       "src": "src/index.ts",
