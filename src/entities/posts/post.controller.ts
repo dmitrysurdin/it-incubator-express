@@ -1,11 +1,13 @@
 import { Request, Response } from 'express';
 import { postRepositories } from './post.repository';
 import { Post } from './post.types';
+import { blogRepositories } from '../blogs/blog.repository';
 
 export const create = (req: Request, res: Response): void => {
 	const newPost: Post = {
 		...req.body,
 		id: Math.floor(Date.now() + Math.random()).toString(),
+		blogName: blogRepositories.findById(req.body.blogId)?.name,
 	};
 
 	const errorsMessages: any = [];

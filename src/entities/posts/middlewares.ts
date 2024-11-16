@@ -1,4 +1,5 @@
 import { body } from 'express-validator';
+import { blogRepositories } from '../blogs/blog.repository';
 
 const titleValidator = body('title')
 	.isString()
@@ -21,17 +22,20 @@ const contentValidator = body('content')
 	.isLength({ min: 1, max: 1000 })
 	.withMessage('Invalid length');
 
-const blogIdValidator = body('blogId').isString().withMessage('Invalid blogId');
-
-const blogNameValidator = body('blogName')
+const blogIdValidator = body('blogId')
 	.isString()
-	.isLength({ max: 15 })
-	.withMessage('Invalid blog name');
+	.withMessage('Invalid blogId')
+	.custom(async (id: string) => {
+		const blog = await blogRepositories.findById(id);
+
+		if (!blog) {
+			throw new Error('Blog with this id does not exist');
+		}
+	});
 
 export const postInputValidators = [
 	titleValidator,
 	shortDescriptionValidator,
 	contentValidator,
 	blogIdValidator,
-	blogNameValidator,
 ];
