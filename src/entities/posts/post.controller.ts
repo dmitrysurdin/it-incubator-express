@@ -5,7 +5,7 @@ import { Post } from './post.types';
 export const create = (req: Request, res: Response): void => {
 	const newPost: Post = {
 		...req.body,
-		id: Math.floor(Date.now() + Math.random()),
+		id: Math.floor(Date.now() + Math.random()).toString(),
 	};
 
 	const errorsMessages: any = [];
