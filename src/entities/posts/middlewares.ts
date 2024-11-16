@@ -23,12 +23,15 @@ const contentValidator = body('content')
 
 const blogIdValidator = body('blogId').isString().withMessage('Invalid blogId');
 
-const nameValidator = body('name').isString().isLength({ max: 15 }).withMessage('Invalid name');
+const blogNameValidator = body('blogName')
+	.isString()
+	.isLength({ max: 15 })
+	.withMessage('Invalid blog name');
 
 export const postInputValidators = [
 	titleValidator,
 	shortDescriptionValidator,
 	contentValidator,
 	blogIdValidator,
-	nameValidator,
+	blogNameValidator,
 ];
