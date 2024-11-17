@@ -4,8 +4,8 @@ config();
 
 export const SETTINGS = {
 	PORT: process.env.PORT || 3003,
-	LOGIN: 'admin',
-	PASSWORD: 'qwerty',
+	LOGIN: process.env.LOGIN,
+	PASSWORD: process.env.PASSWORD,
 	PATH: {
 		BLOGS: '/blogs',
 		POSTS: '/posts',
