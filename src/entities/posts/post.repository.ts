@@ -1,4 +1,4 @@
-import { dbData } from '../../db/db';
+import { dbData } from '../../db/local-db';
 import { Post } from './post.types';
 
 const create = (post: Post): void => {

@@ -1,5 +1,5 @@
 import { Blog } from './blog.types';
-import { dbData } from '../../db/db';
+import { dbData } from '../../db/local-db';
 
 const create = (blog: Blog): void => {
 	dbData.blogs = [...dbData.blogs, blog];
