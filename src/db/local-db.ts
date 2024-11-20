@@ -1,8 +1,8 @@
-import { Blog } from '../entities/blogs/blog.types';
+import { BlogClientModel } from '../entities/blogs/blog.types';
 import { Post } from '../entities/posts/post.types';
 
 interface DBType {
-	blogs: Array<Blog>;
+	blogs: Array<BlogClientModel>;
 	posts: Array<Post>;
 }
 

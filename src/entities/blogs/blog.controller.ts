@@ -1,11 +1,11 @@
-import { Blog } from './blog.types';
+import { BlogClientModel } from './blog.types';
 import { Request, Response } from 'express';
 import { blogRepositories } from './blog.repository';
+import { mapBlogFromDb, mapBlogsFromDb } from './blog.helpers';
 
-export const create = (req: Request, res: Response): void => {
-	const newBlog: Blog = {
+export const create = async (req: Request, res: Response): Promise<void> => {
+	const newBlog: BlogClientModel = {
 		...req.body,
-		id: Math.floor(Date.now() + Math.random()).toString(),
 	};
 
 	const errorsMessages: any = [];
@@ -14,14 +14,14 @@ export const create = (req: Request, res: Response): void => {
 		res.status(400).json({ errorsMessages });
 	}
 
-	blogRepositories.create(newBlog);
+	const createdId = await blogRepositories.create(newBlog);
 
-	res.status(201).json(newBlog);
+	res.status(201).json({ ...newBlog, id: createdId });
 };
 
-export const remove = (req: Request, res: Response): void => {
+export const remove = async (req: Request, res: Response): Promise<void> => {
 	const id = req.params.id;
-	const isDeleted = blogRepositories.remove(id);
+	const isDeleted = await blogRepositories.remove(id);
 
 	if (!isDeleted) {
 		res.sendStatus(404);
@@ -30,30 +30,32 @@ export const remove = (req: Request, res: Response): void => {
 	res.sendStatus(204);
 };
 
-export const findById = (req: Request, res: Response): void => {
+export const findById = async (req: Request, res: Response): Promise<void> => {
 	const id = req.params.id;
-	const blog = blogRepositories.findById(id);
+	const blogFromDb = await blogRepositories.findById(id);
 
-	if (!blog) {
+	if (!blogFromDb) {
 		res.sendStatus(404);
 
 		return;
 	}
+	const blogForClient = mapBlogFromDb(blogFromDb);
 
-	res.status(200).json(blog);
+	res.status(200).json(blogForClient);
 };
 
-export const getAll = (req: Request, res: Response): void => {
-	const blogs = blogRepositories.getAll();
+export const getAll = async (req: Request, res: Response): Promise<void> => {
+	const blogsFromDb = await blogRepositories.getAll();
+	const blogsForClient = mapBlogsFromDb(blogsFromDb);
 
-	res.status(200).json(blogs);
+	res.status(200).json(blogsForClient);
 };
 
-export const update = (req: Request, res: Response): void => {
+export const update = async (req: Request, res: Response): Promise<void> => {
 	const id = req.params.id;
 	const blog = req.body;
 
-	const isUpdated = blogRepositories.update(id, blog);
+	const isUpdated = await blogRepositories.update(id, blog);
 
 	if (isUpdated) {
 		res.sendStatus(204);

@@ -1,10 +1,10 @@
 import { SETTINGS } from '../../src/settings';
 import request from 'supertest';
 import { app } from '../../src/app';
-import { Blog } from '../../src/entities/blogs/blog.types';
+import { BlogClientModel } from '../../src/entities/blogs/blog.types';
 import { authMock } from '../auth.mocks';
 
-type BlogModel = Omit<Blog, 'id'>;
+type BlogModel = Omit<BlogClientModel, 'id'>;
 
 export const blogsManager = {
 	createBlog: async (data: BlogModel, expectedStatusCode: number) => {
