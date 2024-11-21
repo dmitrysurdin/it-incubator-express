@@ -3255,6 +3255,36 @@ __metadata:
   languageName: node
   linkType: hard
 
+"it-incubator-express-app@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "it-incubator-express-app@workspace:."
+  dependencies:
+    "@babel/eslint-parser": "npm:^7.25.9"
+    "@types/cors": "npm:^2.8.17"
+    "@types/express": "npm:^5.0.0"
+    "@types/jest": "npm:^29.5.14"
+    "@types/node": "npm:^22.8.7"
+    "@types/supertest": "npm:^6.0.2"
+    "@typescript-eslint/eslint-plugin": "npm:^8.14.0"
+    "@typescript-eslint/parser": "npm:^8.14.0"
+    cors: "npm:^2.8.5"
+    dotenv: "npm:^16.4.5"
+    eslint: "npm:^8.53.0"
+    eslint-config-prettier: "npm:^9.1.0"
+    eslint-plugin-prettier: "npm:^5.2.1"
+    express: "npm:^4.21.1"
+    express-validator: "npm:^7.2.0"
+    jest: "npm:^29.7.0"
+    mongodb: "npm:^6.10.0"
+    nodemon: "npm:^3.1.7"
+    prettier: "npm:^3.3.3"
+    supertest: "npm:^7.0.0"
+    ts-jest: "npm:^29.2.5"
+    ts-node: "npm:^10.9.2"
+    typescript: "npm:^5.6.3"
+  languageName: unknown
+  linkType: soft
+
 "jackspeak@npm:^3.1.2":
   version: 3.4.3
   resolution: "jackspeak@npm:3.4.3"
@@ -3819,36 +3849,6 @@ __metadata:
   checksum: 10c0/cd3a0b8878e7d6d3799e54340efe3591ca787d9f95f109f28129bdd2915e37807bf8918bb295ab86afb8c82196beec5a1adcaf29042ce3f2bd932b038fe3aa4b
   languageName: node
   linkType: hard
-
-"lesson-12@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "lesson-12@workspace:."
-  dependencies:
-    "@babel/eslint-parser": "npm:^7.25.9"
-    "@types/cors": "npm:^2.8.17"
-    "@types/express": "npm:^5.0.0"
-    "@types/jest": "npm:^29.5.14"
-    "@types/node": "npm:^22.8.7"
-    "@types/supertest": "npm:^6.0.2"
-    "@typescript-eslint/eslint-plugin": "npm:^8.14.0"
-    "@typescript-eslint/parser": "npm:^8.14.0"
-    cors: "npm:^2.8.5"
-    dotenv: "npm:^16.4.5"
-    eslint: "npm:^8.53.0"
-    eslint-config-prettier: "npm:^9.1.0"
-    eslint-plugin-prettier: "npm:^5.2.1"
-    express: "npm:^4.21.1"
-    express-validator: "npm:^7.2.0"
-    jest: "npm:^29.7.0"
-    mongodb: "npm:^6.10.0"
-    nodemon: "npm:^3.1.7"
-    prettier: "npm:^3.3.3"
-    supertest: "npm:^7.0.0"
-    ts-jest: "npm:^29.2.5"
-    ts-node: "npm:^10.9.2"
-    typescript: "npm:^5.6.3"
-  languageName: unknown
-  linkType: soft
 
 "leven@npm:^3.1.0":
   version: 3.1.0

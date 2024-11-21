@@ -17,10 +17,10 @@ const findById = async (id: string): Promise<WithId<PostModel> | null> => {
 };
 
 const update = async (id: string, updatedPost: PostModel): Promise<boolean> => {
-	const { title, shortDescription, content, blogName, blogId } = updatedPost;
+	const { title, shortDescription, content, blogId } = updatedPost;
 	const result = await postCollection.updateOne(
 		{ _id: new ObjectId(id) },
-		{ $set: { title, shortDescription, content, blogName, blogId } },
+		{ $set: { title, shortDescription, content, blogId } },
 	);
 
 	return !!result.matchedCount;
