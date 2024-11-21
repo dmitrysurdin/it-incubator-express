@@ -4,7 +4,7 @@ export interface PostModel {
 	content: string;
 	blogId: string;
 	blogName: string;
-	createdAt: Date;
+	createdAt: string;
 }
 
 export type PostClientModel = {

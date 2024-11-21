@@ -13,12 +13,16 @@ export const dbData: DBType = {
 			name: 'Tech Chronicles',
 			description: 'A blog covering the latest in tech, software engineering, and best practices.',
 			websiteUrl: 'https://techchronicles.com',
+			createdAt: new Date().toISOString(),
+			isMembership: false,
 		},
 		{
 			id: '1731528430487',
 			name: 'Mindful Coding',
 			description: 'Exploring mindful and sustainable software development practices.',
 			websiteUrl: 'https://mindfulcoding.org',
+			createdAt: new Date().toISOString(),
+			isMembership: false,
 		},
 	],
 	posts: [
@@ -30,6 +34,7 @@ export const dbData: DBType = {
 				'TypeScript is a powerful tool for modern JavaScript development, adding static types to enhance reliability and readability...',
 			blogId: '1731528420778',
 			blogName: 'Tech Chronicles',
+			createdAt: new Date().toISOString(),
 		},
 		{
 			id: '1731528448571',
@@ -39,6 +44,7 @@ export const dbData: DBType = {
 				'React hooks, introduced in React 16.8, revolutionized functional components by enabling them to manage state and side effects...',
 			blogId: '1731528430487',
 			blogName: 'Mindful Coding',
+			createdAt: new Date().toISOString(),
 		},
 	],
 };

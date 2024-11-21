@@ -3,7 +3,7 @@ export interface BlogModel {
 	description: string;
 	websiteUrl: string;
 	isMembership: boolean;
-	createdAt: Date;
+	createdAt: string;
 }
 
 export type BlogClientModel = {
