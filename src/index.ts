@@ -2,7 +2,11 @@ import { app } from './app';
 import { SETTINGS } from './settings';
 import { connectDB } from './db/mongo-db';
 
-app.listen(SETTINGS.PORT, async () => {
+const bootstrap = async (): Promise<void> => {
 	await connectDB();
-	console.log('...server started in port ' + SETTINGS.PORT);
-});
+	app.listen(SETTINGS.PORT, async () => {
+		console.log('...server started in port ' + SETTINGS.PORT);
+	});
+};
+
+bootstrap();
