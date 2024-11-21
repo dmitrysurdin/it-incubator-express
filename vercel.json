@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "lesson-2",
+  "name": "it-incubator-express-app",
   "builds": [
     {
       "src": "src/index.ts",
