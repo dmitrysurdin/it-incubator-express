@@ -6,6 +6,8 @@ import { mapBlogFromDb, mapBlogsFromDb } from './blog.helpers';
 export const create = async (req: Request, res: Response): Promise<void> => {
 	const newBlog: BlogClientModel = {
 		...req.body,
+		isMembership: false,
+		createdAt: new Date().toISOString(),
 	};
 
 	const errorsMessages: any = [];

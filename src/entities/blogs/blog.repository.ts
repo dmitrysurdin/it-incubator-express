@@ -17,12 +17,13 @@ const findById = async (id: string): Promise<WithId<BlogModel> | null> => {
 };
 
 const update = async (id: string, updatedBlog: BlogModel): Promise<boolean> => {
+	const { name, description, websiteUrl } = updatedBlog;
 	const result = await blogCollection.updateOne(
 		{ _id: new ObjectId(id) },
-		{ $set: { ...updatedBlog } },
+		{ $set: { name, description, websiteUrl } },
 	);
 
-	return !!result.modifiedCount;
+	return !!result.matchedCount;
 };
 
 const remove = async (id: string): Promise<boolean> => {

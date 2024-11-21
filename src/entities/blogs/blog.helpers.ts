@@ -7,6 +7,8 @@ export const mapBlogFromDb = (blogDb: WithId<BlogModel>): BlogClientModel => {
 		name: blogDb.name,
 		description: blogDb.description,
 		websiteUrl: blogDb.websiteUrl,
+		isMembership: blogDb.isMembership,
+		createdAt: blogDb.createdAt,
 	};
 };
 
