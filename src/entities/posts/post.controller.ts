@@ -9,6 +9,7 @@ export const create = async (req: Request, res: Response): Promise<void> => {
 	const newPost: PostClientModel = {
 		...req.body,
 		blogName: blog?.name,
+		createdAt: new Date().toISOString(),
 	};
 
 	const errorsMessages: any = [];

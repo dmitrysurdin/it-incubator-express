@@ -9,6 +9,7 @@ export const mapPostFromDb = (postDb: WithId<PostModel>): PostClientModel => {
 		content: postDb.content,
 		blogId: postDb.blogId,
 		blogName: postDb.blogName,
+		createdAt: postDb.createdAt,
 	};
 };
 
