@@ -1,9 +1,9 @@
 import { BlogClientModel } from '../entities/blogs/blog.types';
-import { Post } from '../entities/posts/post.types';
+import { PostClientModel } from '../entities/posts/post.types';
 
 interface DBType {
 	blogs: Array<BlogClientModel>;
-	posts: Array<Post>;
+	posts: Array<PostClientModel>;
 }
 
 export const dbData: DBType = {

@@ -1,13 +1,14 @@
 import { Request, Response } from 'express';
 import { postRepositories } from './post.repository';
-import { Post } from './post.types';
+import { PostClientModel } from './post.types';
+import { mapPostFromDb, mapPostsFromDb } from './post.helpers';
 import { blogRepositories } from '../blogs/blog.repository';
 
-export const create = (req: Request, res: Response): void => {
-	const newPost: Post = {
+export const create = async (req: Request, res: Response): Promise<void> => {
+	const blog = await blogRepositories.findById(req.body.blogId);
+	const newPost: PostClientModel = {
 		...req.body,
-		id: Math.floor(Date.now() + Math.random()).toString(),
-		blogName: blogRepositories.findById(req.body.blogId)?.name,
+		blogName: blog?.name,
 	};
 
 	const errorsMessages: any = [];
@@ -16,14 +17,14 @@ export const create = (req: Request, res: Response): void => {
 		res.status(400).json({ errorsMessages });
 	}
 
-	postRepositories.create(newPost);
+	const createdId = await postRepositories.create(newPost);
 
-	res.status(201).json(newPost);
+	res.status(201).json({ ...newPost, id: createdId });
 };
 
-export const remove = (req: Request, res: Response): void => {
+export const remove = async (req: Request, res: Response): Promise<void> => {
 	const id = req.params.id;
-	const isDeleted = postRepositories.remove(id);
+	const isDeleted = await postRepositories.remove(id);
 
 	if (!isDeleted) {
 		res.sendStatus(404);
@@ -32,30 +33,33 @@ export const remove = (req: Request, res: Response): void => {
 	res.sendStatus(204);
 };
 
-export const findById = (req: Request, res: Response): void => {
+export const findById = async (req: Request, res: Response): Promise<void> => {
 	const id = req.params.id;
-	const post = postRepositories.findById(id);
+	const postFromDb = await postRepositories.findById(id);
 
-	if (!post) {
+	if (!postFromDb) {
 		res.sendStatus(404);
 
 		return;
 	}
 
-	res.status(200).json(post);
+	const postForClient = mapPostFromDb(postFromDb);
+
+	res.status(200).json(postForClient);
 };
 
-export const getAll = (req: Request, res: Response): void => {
-	const posts = postRepositories.getAll();
+export const getAll = async (req: Request, res: Response): Promise<void> => {
+	const postsFromDb = await postRepositories.getAll();
+	const postsForClient = mapPostsFromDb(postsFromDb);
 
-	res.status(200).json(posts);
+	res.status(200).json(postsForClient);
 };
 
-export const update = (req: Request, res: Response): void => {
+export const update = async (req: Request, res: Response): Promise<void> => {
 	const id = req.params.id;
 	const post = req.body;
 
-	const isUpdated = postRepositories.update(id, post);
+	const isUpdated = await postRepositories.update(id, post);
 
 	if (isUpdated) {
 		res.sendStatus(204);

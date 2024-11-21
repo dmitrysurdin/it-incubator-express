@@ -1,8 +1,8 @@
-import { dbData } from '../db/local-db';
+import { blogCollection, postCollection } from '../db/mongo-db';
 
-const clearDb = (): void => {
-	dbData.blogs = [];
-	dbData.posts = [];
+const clearDb = async (): Promise<void> => {
+	await postCollection.deleteMany({});
+	await blogCollection.deleteMany({});
 };
 
 export const testingRepositories = {

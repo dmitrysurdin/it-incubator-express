@@ -1,42 +1,34 @@
-import { dbData } from '../../db/local-db';
-import { Post } from './post.types';
+import { PostModel } from './post.types';
+import { ObjectId, WithId } from 'mongodb';
+import { postCollection } from '../../db/mongo-db';
 
-const create = (post: Post): void => {
-	dbData.posts = [...dbData.posts, post];
+const create = async (post: PostModel): Promise<string> => {
+	const result = await postCollection.insertOne({ ...post });
+
+	return result.insertedId.toString();
 };
 
-const getAll = (): Array<Post> => {
-	return dbData.posts;
+const getAll = async (): Promise<Array<WithId<PostModel>>> => {
+	return postCollection.find({}).toArray();
 };
 
-const findById = (id: string): Post | undefined => {
-	return dbData.posts.find((post) => post?.id === id);
+const findById = async (id: string): Promise<WithId<PostModel> | null> => {
+	return postCollection.findOne({ _id: new ObjectId(id) });
 };
 
-const update = (id: string, updatedPost: Omit<Post, 'id'>): boolean => {
-	const postIndex = dbData.posts.findIndex((post) => post.id === id);
+const update = async (id: string, updatedPost: PostModel): Promise<boolean> => {
+	const result = await postCollection.updateOne(
+		{ _id: new ObjectId(id) },
+		{ $set: { ...updatedPost } },
+	);
 
-	if (postIndex === -1) {
-		return false;
-	}
-
-	dbData.posts[postIndex] = {
-		...dbData.posts[postIndex],
-		...updatedPost,
-	};
-
-	return true;
+	return !!result.modifiedCount;
 };
 
-const remove = (id: string): boolean => {
-	const post = findById(id);
+const remove = async (id: string): Promise<boolean> => {
+	const result = await postCollection.deleteOne({ _id: new ObjectId(id) });
 
-	if (!post) {
-		return false;
-	}
-
-	dbData.posts = dbData.posts.filter((post) => post.id !== id);
-	return true;
+	return !!result.deletedCount;
 };
 
 export const postRepositories = {

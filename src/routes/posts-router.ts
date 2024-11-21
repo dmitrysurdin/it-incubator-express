@@ -3,6 +3,7 @@ import { postControllers } from '../entities/posts/post.controller';
 import { postInputValidators } from '../entities/posts/middlewares';
 import { inputCheckErrorsMiddleware } from '../middlewares/inputCheckErrorsMiddleware';
 import { authMiddleware } from '../middlewares/authMiddleware';
+import { mongoIdParamsValidator } from '../middlewares/validators';
 
 export const postsRouter = Router();
 
@@ -19,7 +20,14 @@ postsRouter.put(
 	'/:id',
 	authMiddleware,
 	postInputValidators,
+	mongoIdParamsValidator,
 	inputCheckErrorsMiddleware,
 	postControllers.update,
 );
-postsRouter.delete('/:id', authMiddleware, postControllers.remove);
+postsRouter.delete(
+	'/:id',
+	authMiddleware,
+	mongoIdParamsValidator,
+	inputCheckErrorsMiddleware,
+	postControllers.remove,
+);
