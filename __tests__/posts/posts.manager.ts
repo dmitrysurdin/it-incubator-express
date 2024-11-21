@@ -4,8 +4,6 @@ import { app } from '../../src/app';
 import { authMock } from '../auth.mocks';
 import { PostModel } from '../../src/entities/posts/post.types';
 
-type PostModel = Omit<PostModel, 'id'>;
-
 export const postsManager = {
 	createPost: async (data: PostModel, expectedStatusCode: number) => {
 		return await request(app)
