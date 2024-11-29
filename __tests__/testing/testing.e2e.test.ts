@@ -6,8 +6,11 @@ import { blogToCreate } from '../blogs/blogs.mocks';
 import { testingManager } from './testing.manager';
 import { postMock } from '../posts/posts.mocks';
 import { postsManager } from '../posts/posts.manager';
+import { setupTestDatabase } from '../setupTestDatabase';
 
 describe('Testing API e2e tests', () => {
+	setupTestDatabase();
+
 	it('DELETE should clear all blogs and posts', async () => {
 		const createdBlog = await blogsManager.createBlog(blogToCreate, 201);
 

@@ -6,10 +6,13 @@ import { blogsManager } from '../blogs/blogs.manager';
 import { blogToCreate } from '../blogs/blogs.mocks';
 import { postsManager } from './posts.manager';
 import { testingManager } from '../testing/testing.manager';
+import { setupTestDatabase } from '../setupTestDatabase';
 
 describe('Posts API e2e tests', () => {
-	beforeEach(() => {
-		testingManager.clear(204);
+	setupTestDatabase();
+
+	beforeEach(async () => {
+		await testingManager.clear(204);
 	});
 
 	it('POST should create a new post', async () => {
@@ -64,7 +67,15 @@ describe('Posts API e2e tests', () => {
 
 		const response = await request(app).get(`${SETTINGS.PATH.POSTS}/${postId}`).expect(200);
 
-		expect(response.body).toEqual(expect.objectContaining(postMock));
+		expect(response.body).toEqual(
+			expect.objectContaining({
+				...postMock,
+				blogId: createdBlog.body.id,
+				blogName: createdBlog.body.name,
+				createdAt: createdPost.body.createdAt,
+				id: createdPost.body.id,
+			}),
+		);
 	});
 
 	it('PUT should update a post', async () => {
@@ -85,7 +96,13 @@ describe('Posts API e2e tests', () => {
 
 		const response = await request(app).get(`${SETTINGS.PATH.POSTS}/${postId}`).expect(200);
 
-		expect(response.body).toEqual(expect.objectContaining(updatedPost));
+		expect(response.body).toEqual(
+			expect.objectContaining({
+				...updatedPost,
+				id: createdPost.body.id,
+				createdAt: createdPost.body.createdAt,
+			}),
+		);
 	});
 
 	it('DELETE should delete a post by ID', async () => {

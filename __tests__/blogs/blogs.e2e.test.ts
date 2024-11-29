@@ -4,10 +4,13 @@ import { SETTINGS } from '../../src/settings';
 import { blog1, blog2, blogToCreate, blogToUpdate } from './blogs.mocks';
 import { blogsManager } from './blogs.manager';
 import { testingManager } from '../testing/testing.manager';
+import { setupTestDatabase } from '../setupTestDatabase';
 
 describe('Blogs API e2e tests', () => {
-	beforeEach(() => {
-		testingManager.clear(204);
+	setupTestDatabase();
+
+	beforeEach(async () => {
+		await testingManager.clear(204);
 	});
 
 	it('POST should create a new blog', async () => {
@@ -34,23 +37,31 @@ describe('Blogs API e2e tests', () => {
 	it('GET should find a blog by ID', async () => {
 		const createdBlog = await blogsManager.createBlog(blogToCreate, 201);
 
-		const blogId = createdBlog.body.id;
+		const blogId = createdBlog.body.id.toString();
+		const blogCreatedAt = createdBlog.body.createdAt;
+
+		console.log(blogId);
 
 		const response = await request(app).get(`${SETTINGS.PATH.BLOGS}/${blogId}`).expect(200);
 
-		expect(response.body).toEqual(expect.objectContaining(blogToCreate));
+		expect(response.body).toEqual(
+			expect.objectContaining({ ...blogToCreate, id: blogId, createdAt: blogCreatedAt }),
+		);
 	});
 
 	it('PUT should update a blog', async () => {
 		const createdBlog = await blogsManager.createBlog(blogToCreate, 201);
 
 		const blogId = createdBlog.body.id;
+		const blogCreatedAt = createdBlog.body.createdAt;
 
 		await blogsManager.updateBlog(blogToUpdate, blogId, 204);
 
 		const response = await request(app).get(`${SETTINGS.PATH.BLOGS}/${blogId}`).expect(200);
 
-		expect(response.body).toEqual(expect.objectContaining(blogToUpdate));
+		expect(response.body).toEqual(
+			expect.objectContaining({ ...blogToUpdate, id: blogId, createdAt: blogCreatedAt }),
+		);
 	});
 
 	it('DELETE should delete a blog by ID', async () => {

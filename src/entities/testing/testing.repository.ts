@@ -1,4 +1,4 @@
-import { blogCollection, postCollection } from '../db/mongo-db';
+import { blogCollection, postCollection } from '../../db/mongo-db';
 
 const clearDb = async (): Promise<void> => {
 	await postCollection.deleteMany({});
