@@ -8,6 +8,7 @@ import {
 import { inputCheckErrorsMiddleware } from '../middlewares/inputCheckErrorsMiddleware';
 import { authMiddleware } from '../middlewares/authMiddleware';
 import { mongoIdParamsValidator, searchPaginationQueryValidator } from '../middlewares/validators';
+import { paramsCheckErrorsMiddleware } from '../middlewares/paramsCheckErrorsMiddleware';
 
 export const blogsRouter = Router();
 
@@ -20,6 +21,7 @@ blogsRouter.get(
 blogsRouter.get(
 	'/:blogId/posts',
 	blogIdParamValidator,
+	paramsCheckErrorsMiddleware,
 	searchPaginationQueryValidator,
 	inputCheckErrorsMiddleware,
 	blogControllers.getAllPostsByBlogId,
@@ -41,6 +43,8 @@ blogsRouter.post(
 blogsRouter.post(
 	'/:blogId/posts',
 	authMiddleware,
+	blogIdParamValidator,
+	paramsCheckErrorsMiddleware,
 	postForABlogInputValidators,
 	inputCheckErrorsMiddleware,
 	blogControllers.createPostForBlog,

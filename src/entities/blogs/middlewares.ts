@@ -60,7 +60,6 @@ export const postForABlogInputValidators = [
 	titleValidator,
 	shortDescriptionValidator,
 	contentValidator,
-	blogIdValidator,
 ];
 export const blogInputValidators = [nameValidator, descriptionValidator, websiteUrlValidator];
 export const blogIdParamValidator = [blogIdValidator];
