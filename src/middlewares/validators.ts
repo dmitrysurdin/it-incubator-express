@@ -13,9 +13,10 @@ const pageNumberValidator = query('pageNumber')
 
 const sortDirectionValidator = query('sortDirection')
 	.custom((direction) => {
-		if (!allowedSortDirections.includes(direction)) {
+		if (direction && !allowedSortDirections.includes(direction)) {
 			throw new Error("Sort direction should have only 'desc' or 'asc' values");
 		}
+		return true;
 	})
 	.optional();
 

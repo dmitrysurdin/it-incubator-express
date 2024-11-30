@@ -26,11 +26,10 @@ const getAll = async ({
 	items: Array<WithId<BlogModel>>;
 }> => {
 	const filter = searchNameTerm ? { name: { $regex: searchNameTerm, $options: 'i' } } : {};
-	const sortOption: [string, SortDirection][] = [[sortBy, sortDirection]];
 
 	const items = await blogCollection
 		.find(filter)
-		.sort(sortOption)
+		.sort(sortBy, sortDirection)
 		.skip(skip)
 		.limit(limit)
 		.toArray();
