@@ -1,6 +1,6 @@
 import { BlogModel } from './blog.types';
 import { blogCollection } from '../../db/mongo-db';
-import { ObjectId, WithId } from 'mongodb';
+import { ObjectId, SortDirection, WithId } from 'mongodb';
 
 const create = async (blog: BlogModel): Promise<string> => {
 	const result = await blogCollection.insertOne({ ...blog });
@@ -8,8 +8,34 @@ const create = async (blog: BlogModel): Promise<string> => {
 	return result.insertedId.toString();
 };
 
-const getAll = async (): Promise<Array<WithId<BlogModel>>> => {
-	return blogCollection.find({}).toArray();
+const getAll = async ({
+	limit,
+	skip,
+	sortDirection,
+	sortBy,
+	searchNameTerm,
+}: {
+	limit: number;
+	skip: number;
+	sortDirection: SortDirection;
+	sortBy: string;
+	searchNameTerm: string | null;
+}): Promise<{
+	totalCount: number;
+	items: Array<WithId<BlogModel>>;
+}> => {
+	const filter = searchNameTerm ? { name: { $regex: searchNameTerm, $options: 'i' } } : {};
+	const sortOption: [string, SortDirection][] = [[sortBy, sortDirection]];
+
+	const items = await blogCollection
+		.find(filter)
+		.sort(sortOption)
+		.skip(skip)
+		.limit(limit)
+		.toArray();
+	const totalCount = await blogCollection.countDocuments(filter);
+
+	return { items, totalCount };
 };
 
 const findById = async (id: string): Promise<WithId<BlogModel> | null> => {

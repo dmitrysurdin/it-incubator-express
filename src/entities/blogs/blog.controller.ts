@@ -9,9 +9,23 @@ export const create = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const getAll = async (req: Request, res: Response): Promise<void> => {
-	const allBlogs = await blogServices.getAll();
+	const query: {
+		pageSize?: string;
+		pageNumber?: string;
+		sortDirection?: string;
+		sortBy?: string;
+		searchNameTerm?: string;
+	} = req.query;
 
-	res.status(200).json(allBlogs);
+	const result = await blogServices.getAll({
+		pageSize: query?.pageSize,
+		pageNumber: query?.pageNumber,
+		sortDirection: query?.sortDirection,
+		sortBy: query?.sortBy,
+		searchNameTerm: query?.searchNameTerm,
+	});
+
+	res.status(200).json(result);
 };
 
 export const findById = async (req: Request, res: Response): Promise<void> => {

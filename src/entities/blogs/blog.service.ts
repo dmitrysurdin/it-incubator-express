@@ -1,6 +1,7 @@
 import { BlogClientModel, BlogModel } from './blog.types';
 import { blogRepositories } from './blog.repository';
 import { mapBlogFromDb, mapBlogsFromDb } from './blog.helpers';
+import { SortDirection } from 'mongodb';
 
 const create = async (blog: BlogModel): Promise<BlogClientModel> => {
 	const newBlog: BlogModel = {
@@ -13,10 +14,49 @@ const create = async (blog: BlogModel): Promise<BlogClientModel> => {
 	return { ...newBlog, id: createdId };
 };
 
-const getAll = async (): Promise<Array<BlogClientModel>> => {
-	const blogsFromDb = await blogRepositories.getAll();
+const getAll = async ({
+	pageSize,
+	pageNumber,
+	sortDirection,
+	sortBy,
+	searchNameTerm,
+}: {
+	pageSize?: string;
+	pageNumber?: string;
+	sortDirection?: string;
+	sortBy?: string;
+	searchNameTerm?: string;
+}): Promise<{
+	items: Array<BlogClientModel>;
+	totalCount: number;
+	pagesCount: number;
+	page: number;
+	pageSize: number;
+}> => {
+	const limit = Number(pageSize) || 10;
+	const validatedPageNumber = Number(pageNumber) || 1;
 
-	return mapBlogsFromDb(blogsFromDb);
+	const params = {
+		limit,
+		validatedPageNumber,
+		skip: (validatedPageNumber - 1) * limit,
+		sortDirection: (sortDirection as SortDirection) ?? 'desc',
+		sortBy: sortBy ?? 'createdAt',
+		searchNameTerm: searchNameTerm ?? null,
+	};
+
+	const { items, totalCount } = await blogRepositories.getAll({
+		...params,
+	});
+	const pagesCount = Math.ceil(totalCount / limit);
+
+	return {
+		pagesCount,
+		totalCount,
+		pageSize: limit,
+		page: validatedPageNumber,
+		items: mapBlogsFromDb(items),
+	};
 };
 
 const findById = async (id: string): Promise<BlogClientModel | null> => {
