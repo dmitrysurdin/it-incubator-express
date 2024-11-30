@@ -2,13 +2,21 @@ import { Request, Response } from 'express';
 import { blogRepositories } from './blog.repository';
 import { blogServices } from './blog.service';
 
-export const create = async (req: Request, res: Response): Promise<void> => {
+const create = async (req: Request, res: Response): Promise<void> => {
 	const createdBlog = await blogServices.create(req.body);
 
 	res.status(201).json(createdBlog);
 };
 
-export const getAll = async (req: Request, res: Response): Promise<void> => {
+const createPostForBlog = async (req: Request, res: Response): Promise<void> => {
+	const blogId = req.params.blogId;
+	const post = req.body;
+	const createdPost = await blogServices.createPostForBlog(blogId, post);
+
+	res.status(201).json(createdPost);
+};
+
+const getAll = async (req: Request, res: Response): Promise<void> => {
 	const query: {
 		pageSize?: string;
 		pageNumber?: string;
@@ -28,7 +36,29 @@ export const getAll = async (req: Request, res: Response): Promise<void> => {
 	res.status(200).json(result);
 };
 
-export const findById = async (req: Request, res: Response): Promise<void> => {
+const getAllPostsByBlogId = async (req: Request, res: Response): Promise<void> => {
+	const query: {
+		pageSize?: string;
+		pageNumber?: string;
+		sortDirection?: string;
+		sortBy?: string;
+		searchNameTerm?: string;
+	} = req.query;
+	const blogId = req.params.blogId;
+
+	const result = await blogServices.getAllPostsByBlogId({
+		blogId,
+		pageSize: query?.pageSize,
+		pageNumber: query?.pageNumber,
+		sortDirection: query?.sortDirection,
+		sortBy: query?.sortBy,
+		searchNameTerm: query?.searchNameTerm,
+	});
+
+	res.status(200).json(result);
+};
+
+const findById = async (req: Request, res: Response): Promise<void> => {
 	const foundBlog = await blogServices.findById(req.params.id);
 
 	if (!foundBlog) {
@@ -40,7 +70,7 @@ export const findById = async (req: Request, res: Response): Promise<void> => {
 	res.status(200).json(foundBlog);
 };
 
-export const update = async (req: Request, res: Response): Promise<void> => {
+const update = async (req: Request, res: Response): Promise<void> => {
 	const id = req.params.id;
 	const blog = req.body;
 
@@ -55,7 +85,7 @@ export const update = async (req: Request, res: Response): Promise<void> => {
 	res.sendStatus(204);
 };
 
-export const remove = async (req: Request, res: Response): Promise<void> => {
+const remove = async (req: Request, res: Response): Promise<void> => {
 	const isDeleted = await blogRepositories.remove(req.params.id);
 
 	if (!isDeleted) {
@@ -67,8 +97,10 @@ export const remove = async (req: Request, res: Response): Promise<void> => {
 
 export const blogControllers = {
 	getAll,
+	getAllPostsByBlogId,
 	findById,
 	create,
+	createPostForBlog,
 	update,
 	remove,
 };

@@ -13,7 +13,12 @@ postsRouter.get(
 	inputCheckErrorsMiddleware,
 	postControllers.getAll,
 );
-postsRouter.get('/:id', postControllers.findById);
+postsRouter.get(
+	'/:id',
+	mongoIdParamsValidator,
+	inputCheckErrorsMiddleware,
+	postControllers.findById,
+);
 postsRouter.post(
 	'/',
 	authMiddleware,

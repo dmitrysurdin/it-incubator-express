@@ -1,6 +1,7 @@
 import { BlogModel } from './blog.types';
-import { blogCollection } from '../../db/mongo-db';
+import { blogCollection, postCollection } from '../../db/mongo-db';
 import { ObjectId, SortDirection, WithId } from 'mongodb';
+import { PostModel } from '../posts/post.types';
 
 const create = async (blog: BlogModel): Promise<string> => {
 	const result = await blogCollection.insertOne({ ...blog });
@@ -38,6 +39,38 @@ const getAll = async ({
 	return { items, totalCount };
 };
 
+const getAllPostsByBlogId = async ({
+	blogId,
+	limit,
+	skip,
+	sortDirection,
+	sortBy,
+	searchNameTerm,
+}: {
+	blogId: string;
+	limit: number;
+	skip: number;
+	sortDirection: SortDirection;
+	sortBy: string;
+	searchNameTerm: string | null;
+}): Promise<{
+	totalCount: number;
+	items: Array<WithId<PostModel>>;
+}> => {
+	const filter = searchNameTerm ? { name: { $regex: searchNameTerm, $options: 'i' } } : { blogId };
+	const sortOption: [string, SortDirection][] = [[sortBy, sortDirection]];
+
+	const items = await postCollection
+		.find(filter)
+		.sort(sortOption)
+		.skip(skip)
+		.limit(limit)
+		.toArray();
+	const totalCount = await postCollection.countDocuments(filter);
+
+	return { items, totalCount };
+};
+
 const findById = async (id: string): Promise<WithId<BlogModel> | null> => {
 	return blogCollection.findOne({ _id: new ObjectId(id) });
 };
@@ -61,6 +94,7 @@ const remove = async (id: string): Promise<boolean> => {
 export const blogRepositories = {
 	create,
 	getAll,
+	getAllPostsByBlogId,
 	findById,
 	update,
 	remove,

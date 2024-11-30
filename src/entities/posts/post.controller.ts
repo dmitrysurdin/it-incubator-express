@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { postRepositories } from './post.repository';
 import { postServices } from './post.service';
 
-export const create = async (req: Request, res: Response): Promise<void> => {
+const create = async (req: Request, res: Response): Promise<void> => {
 	const createdPost = await postServices.create(req.body);
 
 	if (!createdPost) {
@@ -14,7 +14,7 @@ export const create = async (req: Request, res: Response): Promise<void> => {
 	res.status(201).json(createdPost);
 };
 
-export const getAll = async (req: Request, res: Response): Promise<void> => {
+const getAll = async (req: Request, res: Response): Promise<void> => {
 	const query: {
 		pageSize?: string;
 		pageNumber?: string;
@@ -46,7 +46,7 @@ export const findById = async (req: Request, res: Response): Promise<void> => {
 	res.status(200).json(foundPost);
 };
 
-export const update = async (req: Request, res: Response): Promise<void> => {
+const update = async (req: Request, res: Response): Promise<void> => {
 	const id = req.params.id;
 	const post = req.body;
 
@@ -61,7 +61,7 @@ export const update = async (req: Request, res: Response): Promise<void> => {
 	res.sendStatus(204);
 };
 
-export const remove = async (req: Request, res: Response): Promise<void> => {
+const remove = async (req: Request, res: Response): Promise<void> => {
 	const isDeleted = await postServices.remove(req.params.id);
 
 	if (!isDeleted) {
