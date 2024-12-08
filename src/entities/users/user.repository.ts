@@ -27,13 +27,17 @@ const getAll = async ({
 	items: Array<WithId<UserDbModel>>;
 }> => {
 	const filter: Record<string, any> = {};
-	if (searchLoginTerm) {
-		filter.login = { $regex: searchLoginTerm, $options: 'i' };
-	}
-	if (searchEmailTerm) {
-		filter.email = { $regex: searchEmailTerm, $options: 'i' };
-	}
 
+	if (searchLoginTerm || searchEmailTerm) {
+		filter.$or = [];
+
+		if (searchLoginTerm) {
+			filter.$or.push({ login: { $regex: searchLoginTerm, $options: 'i' } });
+		}
+		if (searchEmailTerm) {
+			filter.$or.push({ email: { $regex: searchEmailTerm, $options: 'i' } });
+		}
+	}
 	const items = await userCollection
 		.find(filter)
 		.sort(sortBy, sortDirection)
