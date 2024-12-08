@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { blogRepositories } from './blog.repository';
 import { blogServices } from './blog.service';
 
 const create = async (req: Request, res: Response): Promise<void> => {
@@ -86,7 +85,7 @@ const update = async (req: Request, res: Response): Promise<void> => {
 };
 
 const remove = async (req: Request, res: Response): Promise<void> => {
-	const isDeleted = await blogRepositories.remove(req.params.id);
+	const isDeleted = await blogServices.remove(req.params.id);
 
 	if (!isDeleted) {
 		res.sendStatus(404);

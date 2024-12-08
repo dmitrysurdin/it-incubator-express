@@ -26,18 +26,11 @@ const sortByValidator = query('sortBy')
 	.trim()
 	.optional();
 
-const searchNameTermValidator = query('searchNameTerm')
-	.isString()
-	.withMessage('searchNameTerm should be a string')
-	.trim()
-	.optional();
-
-export const searchPaginationQueryValidator = [
+export const paginationQueryValidator = [
 	pageSizeValidator,
 	pageNumberValidator,
 	sortDirectionValidator,
 	sortByValidator,
-	searchNameTermValidator,
 ];
 
 export const mongoIdParamsValidator = [

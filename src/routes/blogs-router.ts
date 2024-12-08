@@ -7,14 +7,15 @@ import {
 } from '../entities/blogs/middlewares';
 import { inputCheckErrorsMiddleware } from '../middlewares/inputCheckErrorsMiddleware';
 import { authMiddleware } from '../middlewares/authMiddleware';
-import { mongoIdParamsValidator, searchPaginationQueryValidator } from '../middlewares/validators';
+import { mongoIdParamsValidator, paginationQueryValidator } from '../middlewares/validators';
 import { paramsCheckErrorsMiddleware } from '../middlewares/paramsCheckErrorsMiddleware';
+import { searchNameTermValidator } from '../entities/blogs/validators';
 
 export const blogsRouter = Router();
 
 blogsRouter.get(
 	'/',
-	searchPaginationQueryValidator,
+	[...paginationQueryValidator, searchNameTermValidator],
 	inputCheckErrorsMiddleware,
 	blogControllers.getAll,
 );
@@ -22,7 +23,7 @@ blogsRouter.get(
 	'/:blogId/posts',
 	blogIdParamValidator,
 	paramsCheckErrorsMiddleware,
-	searchPaginationQueryValidator,
+	[...paginationQueryValidator, searchNameTermValidator],
 	inputCheckErrorsMiddleware,
 	blogControllers.getAllPostsByBlogId,
 );

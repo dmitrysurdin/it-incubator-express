@@ -3,13 +3,14 @@ import { postControllers } from '../entities/posts/post.controller';
 import { postInputValidators } from '../entities/posts/middlewares';
 import { inputCheckErrorsMiddleware } from '../middlewares/inputCheckErrorsMiddleware';
 import { authMiddleware } from '../middlewares/authMiddleware';
-import { mongoIdParamsValidator, searchPaginationQueryValidator } from '../middlewares/validators';
+import { mongoIdParamsValidator, paginationQueryValidator } from '../middlewares/validators';
+import { searchNameTermValidator } from '../entities/posts/validators';
 
 export const postsRouter = Router();
 
 postsRouter.get(
 	'/',
-	searchPaginationQueryValidator,
+	[...paginationQueryValidator, searchNameTermValidator],
 	inputCheckErrorsMiddleware,
 	postControllers.getAll,
 );
