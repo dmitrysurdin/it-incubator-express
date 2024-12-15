@@ -12,19 +12,8 @@ const findById = async (id: string): Promise<CommentClientModel | null> => {
 	return mapCommentFromDb(commentFromDb);
 };
 
-const update = async (id: string, newCommentData: CommentInputModel): Promise<boolean> => {
-	const currentComment = await findById(id);
-
-	if (!currentComment) {
-		return false;
-	}
-
-	return await commentRepositories.update({
-		id,
-		content: newCommentData.content,
-		commentatorInfo: currentComment.commentatorInfo,
-		createdAt: currentComment.createdAt,
-	});
+const update = async (newCommentData: CommentClientModel): Promise<boolean> => {
+	return await commentRepositories.update(newCommentData);
 };
 
 const remove = async (id: string): Promise<boolean> => {

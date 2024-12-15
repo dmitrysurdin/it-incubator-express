@@ -43,7 +43,7 @@ export const bearerAuthMiddleware = (req: Request, res: Response, next: NextFunc
 		req.userId = authServices.getUserIdByToken(token);
 		next();
 	} catch (error) {
-		res.sendStatus(403);
+		res.sendStatus(401);
 
 		return;
 	}

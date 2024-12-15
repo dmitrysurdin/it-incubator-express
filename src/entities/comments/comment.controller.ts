@@ -17,7 +17,26 @@ const update = async (req: Request, res: Response): Promise<void> => {
 	const id = req.params.commentId;
 	const newCommentData = req.body;
 
-	const isUpdated = await commentServices.update(id, newCommentData);
+	const currentComment = await commentServices.findById(id);
+
+	if (!currentComment) {
+		res.sendStatus(404);
+
+		return;
+	}
+
+	if (currentComment?.commentatorInfo.userId !== req.userId) {
+		res.sendStatus(403);
+
+		return;
+	}
+
+	const isUpdated = await commentServices.update({
+		id,
+		content: newCommentData.content,
+		commentatorInfo: currentComment.commentatorInfo,
+		createdAt: currentComment.createdAt,
+	});
 
 	if (!isUpdated) {
 		res.sendStatus(404);
