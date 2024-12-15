@@ -36,3 +36,13 @@ export const paginationQueryValidator = [
 export const mongoIdParamsValidator = [
 	param('id').isMongoId().withMessage('Invalid ID format. Must be a valid MongoDB ObjectId.'),
 ];
+
+export const mongoPostIdParamsValidator = [
+	param('postId').isMongoId().withMessage('Invalid ID format. Must be a valid MongoDB ObjectId.'),
+];
+
+export const mongoCommentIdParamsValidator = [
+	param('commentId')
+		.isMongoId()
+		.withMessage('Invalid ID format. Must be a valid MongoDB ObjectId.'),
+];

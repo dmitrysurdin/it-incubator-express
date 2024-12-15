@@ -10,10 +10,12 @@ export const SETTINGS = {
 	DB_NAME: 'database',
 	BLOG_COLLECTION_NAME: 'blogs',
 	POST_COLLECTION_NAME: 'posts',
+	COMMENTS_COLLECTION_NAME: 'comments',
 	USER_COLLECTION_NAME: 'users',
 	PATH: {
 		BLOGS: '/blogs',
 		POSTS: '/posts',
+		COMMENTS: '/comments',
 		USERS: '/users',
 		AUTH: '/auth',
 		TESTING: '/testing',

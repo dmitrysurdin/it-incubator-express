@@ -40,8 +40,6 @@ describe('Blogs API e2e tests', () => {
 		const blogId = createdBlog.body.id.toString();
 		const blogCreatedAt = createdBlog.body.createdAt;
 
-		console.log(blogId);
-
 		const response = await request(app).get(`${SETTINGS.PATH.BLOGS}/${blogId}`).expect(200);
 
 		expect(response.body).toEqual(

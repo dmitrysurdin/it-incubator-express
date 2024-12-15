@@ -1,6 +1,6 @@
-import { PostModel } from './post.types';
+import { CommentForPostDbModel, PostModel } from './post.types';
 import { ObjectId, SortDirection, WithId } from 'mongodb';
-import { postCollection } from '../../db/mongo-db';
+import { commentsCollection, postCollection } from '../../db/mongo-db';
 
 const create = async (post: PostModel): Promise<string> => {
 	const result = await postCollection.insertOne({ ...post });
@@ -37,6 +37,7 @@ const getAll = async ({
 
 	return { items, totalCount };
 };
+
 const findById = async (id: string): Promise<WithId<PostModel> | null> => {
 	return postCollection.findOne({ _id: new ObjectId(id) });
 };
@@ -57,10 +58,47 @@ const remove = async (id: string): Promise<boolean> => {
 	return !!result.deletedCount;
 };
 
+const createCommentForPost = async (comment: CommentForPostDbModel): Promise<string> => {
+	const result = await commentsCollection.insertOne({ ...comment });
+
+	return result.insertedId.toString();
+};
+
+const getAllCommentsForPost = async ({
+	limit,
+	skip,
+	sortDirection,
+	sortBy,
+	postId,
+}: {
+	limit: number;
+	skip: number;
+	sortDirection: SortDirection;
+	sortBy: string;
+	postId: string;
+}): Promise<{
+	totalCount: number;
+	items: Array<WithId<CommentForPostDbModel>>;
+}> => {
+	const sortOption: [string, SortDirection][] = [[sortBy, sortDirection]];
+
+	const items = await commentsCollection
+		.find({ postId })
+		.sort(sortOption)
+		.skip(skip)
+		.limit(limit)
+		.toArray();
+	const totalCount = await commentsCollection.countDocuments({ postId });
+
+	return { items, totalCount };
+};
+
 export const postRepositories = {
 	create,
 	getAll,
 	findById,
 	update,
 	remove,
+	createCommentForPost,
+	getAllCommentsForPost,
 };

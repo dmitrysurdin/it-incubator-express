@@ -10,3 +10,22 @@ export interface PostModel {
 export type PostClientModel = {
 	id: string;
 } & PostModel;
+
+interface CommentatorInfo {
+	userId: string;
+	userLogin: string;
+}
+
+export interface CommentForPostDbModel {
+	postId: string;
+	content: string;
+	commentatorInfo: CommentatorInfo;
+	createdAt: string;
+}
+
+export interface CommentForPostClientModel {
+	id: string;
+	content: string;
+	commentatorInfo: CommentatorInfo;
+	createdAt: string;
+}

@@ -89,6 +89,8 @@ const remove = async (req: Request, res: Response): Promise<void> => {
 
 	if (!isDeleted) {
 		res.sendStatus(404);
+
+		return;
 	}
 
 	res.sendStatus(204);

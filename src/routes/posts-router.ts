@@ -1,9 +1,13 @@
 import { Router } from 'express';
 import { postControllers } from '../entities/posts/post.controller';
-import { postInputValidators } from '../entities/posts/middlewares';
+import { commentInputValidators, postInputValidators } from '../entities/posts/middlewares';
 import { inputCheckErrorsMiddleware } from '../middlewares/inputCheckErrorsMiddleware';
-import { basicAuthMiddleware } from '../middlewares/authMiddleware';
-import { mongoIdParamsValidator, paginationQueryValidator } from '../middlewares/validators';
+import { basicAuthMiddleware, bearerAuthMiddleware } from '../middlewares/authMiddleware';
+import {
+	mongoIdParamsValidator,
+	mongoPostIdParamsValidator,
+	paginationQueryValidator,
+} from '../middlewares/validators';
 import { searchNameTermValidator } from '../entities/posts/validators';
 
 export const postsRouter = Router();
@@ -41,4 +45,18 @@ postsRouter.delete(
 	mongoIdParamsValidator,
 	inputCheckErrorsMiddleware,
 	postControllers.remove,
+);
+postsRouter.post(
+	'/:postId/comments',
+	bearerAuthMiddleware,
+	mongoPostIdParamsValidator,
+	commentInputValidators,
+	inputCheckErrorsMiddleware,
+	postControllers.createCommentForPost,
+);
+postsRouter.get(
+	'/:postId/comments',
+	mongoPostIdParamsValidator,
+	[...paginationQueryValidator],
+	postControllers.getAllCommentsForPost,
 );
