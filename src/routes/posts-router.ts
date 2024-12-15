@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { postControllers } from '../entities/posts/post.controller';
 import { postInputValidators } from '../entities/posts/middlewares';
 import { inputCheckErrorsMiddleware } from '../middlewares/inputCheckErrorsMiddleware';
-import { authMiddleware } from '../middlewares/authMiddleware';
+import { basicAuthMiddleware } from '../middlewares/authMiddleware';
 import { mongoIdParamsValidator, paginationQueryValidator } from '../middlewares/validators';
 import { searchNameTermValidator } from '../entities/posts/validators';
 
@@ -22,14 +22,14 @@ postsRouter.get(
 );
 postsRouter.post(
 	'/',
-	authMiddleware,
+	basicAuthMiddleware,
 	postInputValidators,
 	inputCheckErrorsMiddleware,
 	postControllers.create,
 );
 postsRouter.put(
 	'/:id',
-	authMiddleware,
+	basicAuthMiddleware,
 	postInputValidators,
 	mongoIdParamsValidator,
 	inputCheckErrorsMiddleware,
@@ -37,7 +37,7 @@ postsRouter.put(
 );
 postsRouter.delete(
 	'/:id',
-	authMiddleware,
+	basicAuthMiddleware,
 	mongoIdParamsValidator,
 	inputCheckErrorsMiddleware,
 	postControllers.remove,

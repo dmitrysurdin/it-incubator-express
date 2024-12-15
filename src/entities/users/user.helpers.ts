@@ -10,6 +10,6 @@ export const mapUserFromDb = (userDb: WithId<UserDbModel>): UserClientModel => {
 	};
 };
 
-export const mapUsersFromDb = (blogsDb: Array<WithId<UserDbModel>>): Array<UserClientModel> => {
-	return blogsDb.map(mapUserFromDb);
+export const mapUsersFromDb = (usersDb: Array<WithId<UserDbModel>>): Array<UserClientModel> => {
+	return usersDb.map(mapUserFromDb);
 };

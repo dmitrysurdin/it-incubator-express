@@ -1,11 +1,12 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { SETTINGS } from '../settings';
+import { authServices } from '../entities/auth/auth.service';
 
 const ADMIN_AUTH = `${SETTINGS.LOGIN}:${SETTINGS.PASSWORD}`;
 
 const BASIC = 'Basic';
 
-export const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {
+export const basicAuthMiddleware = (req: Request, res: Response, next: NextFunction): void => {
 	const auth = req.headers['authorization'];
 
 	if (!auth) {
@@ -25,4 +26,25 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction):
 	}
 
 	next();
+};
+
+export const bearerAuthMiddleware = (req: Request, res: Response, next: NextFunction): void => {
+	const authHeader = req.headers.authorization;
+
+	if (!authHeader) {
+		res.sendStatus(401);
+
+		return;
+	}
+
+	const token = authHeader.split(' ')[1];
+
+	try {
+		req.userId = authServices.getUserIdByToken(token);
+		next();
+	} catch (error) {
+		res.sendStatus(403);
+
+		return;
+	}
 };

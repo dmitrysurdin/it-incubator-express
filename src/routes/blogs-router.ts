@@ -6,7 +6,7 @@ import {
 	postForABlogInputValidators,
 } from '../entities/blogs/middlewares';
 import { inputCheckErrorsMiddleware } from '../middlewares/inputCheckErrorsMiddleware';
-import { authMiddleware } from '../middlewares/authMiddleware';
+import { basicAuthMiddleware } from '../middlewares/authMiddleware';
 import { mongoIdParamsValidator, paginationQueryValidator } from '../middlewares/validators';
 import { paramsCheckErrorsMiddleware } from '../middlewares/paramsCheckErrorsMiddleware';
 import { searchNameTermValidator } from '../entities/blogs/validators';
@@ -36,14 +36,14 @@ blogsRouter.get(
 
 blogsRouter.post(
 	'/',
-	authMiddleware,
+	basicAuthMiddleware,
 	blogInputValidators,
 	inputCheckErrorsMiddleware,
 	blogControllers.create,
 );
 blogsRouter.post(
 	'/:blogId/posts',
-	authMiddleware,
+	basicAuthMiddleware,
 	blogIdParamValidator,
 	paramsCheckErrorsMiddleware,
 	postForABlogInputValidators,
@@ -52,7 +52,7 @@ blogsRouter.post(
 );
 blogsRouter.put(
 	'/:id',
-	authMiddleware,
+	basicAuthMiddleware,
 	blogInputValidators,
 	mongoIdParamsValidator,
 	inputCheckErrorsMiddleware,
@@ -60,7 +60,7 @@ blogsRouter.put(
 );
 blogsRouter.delete(
 	'/:id',
-	authMiddleware,
+	basicAuthMiddleware,
 	mongoIdParamsValidator,
 	inputCheckErrorsMiddleware,
 	blogControllers.remove,
