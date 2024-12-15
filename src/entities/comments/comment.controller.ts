@@ -25,7 +25,7 @@ const update = async (req: Request, res: Response): Promise<void> => {
 		return;
 	}
 
-	if (currentComment?.commentatorInfo.userId !== req.userId) {
+	if (currentComment.commentatorInfo.userId !== req.userId) {
 		res.sendStatus(403);
 
 		return;
@@ -48,6 +48,21 @@ const update = async (req: Request, res: Response): Promise<void> => {
 };
 
 const remove = async (req: Request, res: Response): Promise<void> => {
+	const id = req.params.commentId;
+	const currentComment = await commentServices.findById(id);
+
+	if (!currentComment) {
+		res.sendStatus(404);
+
+		return;
+	}
+
+	if (currentComment.commentatorInfo.userId !== req.userId) {
+		res.sendStatus(403);
+
+		return;
+	}
+
 	const isDeleted = await commentServices.remove(req.params.commentId);
 
 	if (!isDeleted) {
