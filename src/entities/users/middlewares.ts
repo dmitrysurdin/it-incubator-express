@@ -9,12 +9,14 @@ const loginValidator = body('login')
 	.matches(/^[a-zA-Z0-9_-]*$/)
 	.withMessage('Login can only include letters, numbers, "_" and "-".');
 
-const emailValidator = body('email')
+export const emailValidator = body('email')
 	.isString()
 	.withMessage('Should be a string')
 	.trim()
 	.matches(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)
 	.withMessage('Must be a valid email address (e.g., example@example.com).');
+
+export const codeValidator = body('code').isString().withMessage('Should be a string').trim();
 
 const passwordValidator = body('password')
 	.isString()

@@ -22,3 +22,24 @@ export interface AuthUserClientModel {
 export interface CustomJwtPayload extends JwtPayload {
 	userId: string;
 }
+
+export interface RegistrationUserInputModel {
+	login: string;
+	email: string;
+	password: string;
+}
+
+export interface RegistrationUserDBModel {
+	accountData: {
+		login: string;
+		email: string;
+		passwordHash: string;
+		passwordSalt: string;
+		createdAt: string;
+	};
+	emailConfirmation: {
+		confirmationCode: string;
+		expirationDate: Date;
+		isConfirmed: boolean;
+	};
+}

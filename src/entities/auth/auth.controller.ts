@@ -37,7 +37,64 @@ const me = async (req: Request, res: Response): Promise<void> => {
 	res.status(200).json(user);
 };
 
+const register = async (req: Request, res: Response): Promise<void> => {
+	try {
+		const isCreated = await authServices.register(req.body);
+
+		if (!isCreated) {
+			res.sendStatus(500);
+
+			return;
+		}
+
+		res.sendStatus(204);
+
+		return;
+	} catch (error) {
+		res.status(400).json(error);
+
+		return;
+	}
+};
+
+const resendConfirmationEmail = async (req: Request, res: Response): Promise<void> => {
+	try {
+		await authServices.resendConfirmationEmail(req.body.email);
+
+		res.sendStatus(204);
+
+		return;
+	} catch (error) {
+		res.status(400).json(error);
+
+		return;
+	}
+};
+
+const confirmRegistration = async (req: Request, res: Response): Promise<void> => {
+	try {
+		const isSucceed = await authServices.confirmRegistration(req.body.code);
+
+		if (!isSucceed) {
+			res.sendStatus(500);
+
+			return;
+		}
+
+		res.sendStatus(204);
+
+		return;
+	} catch (error) {
+		res.status(400).json(error);
+
+		return;
+	}
+};
+
 export const authControllers = {
 	login,
 	me,
+	register,
+	resendConfirmationEmail,
+	confirmRegistration,
 };
