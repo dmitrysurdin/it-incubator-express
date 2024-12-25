@@ -15,7 +15,7 @@ export const emailService = {
 
 		if (!registeredUser || registeredUser?.emailConfirmation.isConfirmed) {
 			throw {
-				errorsMessages: [{ message: 'user is confirmed or not exited', field: 'isConfirmed' }],
+				errorsMessages: [{ message: 'user is confirmed or not exited', field: 'email' }],
 			};
 		}
 
