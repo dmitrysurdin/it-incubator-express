@@ -23,7 +23,7 @@ export const emailService = {
 
 		await authRepositories.updateConfirmationCodeById(
 			registeredUser._id.toString(),
-			registeredUser.emailConfirmation.confirmationCode,
+			newConfirmationCode,
 		);
 
 		return await emailManager.sendConfirmationEmail({
