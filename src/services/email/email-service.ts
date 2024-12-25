@@ -1,6 +1,7 @@
 import { emailManager } from './email-manager';
 import { SentMessageInfo } from 'nodemailer';
 import { authRepositories } from '../../entities/auth/auth.repository';
+import { v4 as uuidv4 } from 'uuid';
 
 export const emailService = {
 	sendConfirmationEmail: async ({
@@ -14,13 +15,20 @@ export const emailService = {
 
 		if (!registeredUser || registeredUser?.emailConfirmation.isConfirmed) {
 			throw {
-				errorsMessages: [{ field: 'isConfirmed', message: 'user is confirmed or not exited' }],
+				errorsMessages: [{ message: 'user is confirmed or not exited', field: 'isConfirmed' }],
 			};
 		}
 
+		const newConfirmationCode = uuidv4();
+
+		await authRepositories.updateConfirmationCodeById(
+			registeredUser._id.toString(),
+			registeredUser.emailConfirmation.confirmationCode,
+		);
+
 		return await emailManager.sendConfirmationEmail({
 			email,
-			confirmationCode: registeredUser.emailConfirmation.confirmationCode,
+			confirmationCode: newConfirmationCode,
 		});
 	},
 };

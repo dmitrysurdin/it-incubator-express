@@ -54,6 +54,14 @@ const confirmRegistrationById = async (id: string): Promise<boolean> => {
 	return !!result.matchedCount;
 };
 
+const updateConfirmationCodeById = async (id: string, code: string): Promise<boolean> => {
+	const result = await registrationUserCollection.updateOne(
+		{ _id: new ObjectId(id) },
+		{ $set: { 'emailConfirmation.confirmationCode': code } },
+	);
+	return !!result.matchedCount;
+};
+
 export const authRepositories = {
 	findUserByLoginOrEmail,
 	findUserById,
@@ -63,4 +71,5 @@ export const authRepositories = {
 	findRegistrationUserByLogin,
 	findRegistrationUserByCode,
 	confirmRegistrationById,
+	updateConfirmationCodeById,
 };
