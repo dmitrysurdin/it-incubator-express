@@ -43,3 +43,8 @@ export interface RegistrationUserDBModel {
 		isConfirmed: boolean;
 	};
 }
+
+export interface RevokedRefreshTokenDBModel {
+	userId: string;
+	token: string;
+}

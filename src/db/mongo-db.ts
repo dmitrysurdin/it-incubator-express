@@ -4,7 +4,7 @@ import { BlogModel } from '../entities/blogs/blog.types';
 import { PostModel } from '../entities/posts/post.types';
 import { UserDbModel } from '../entities/users/user.types';
 import { CommentDBModel } from '../entities/comments/comment.types';
-import { RegistrationUserDBModel } from '../entities/auth/auth.types';
+import { RegistrationUserDBModel, RevokedRefreshTokenDBModel } from '../entities/auth/auth.types';
 
 const client: MongoClient = new MongoClient(SETTINGS.MONGO_URL);
 export const db: Db = client.db(SETTINGS.DB_NAME);
@@ -23,6 +23,8 @@ export const userCollection: Collection<UserDbModel> = db.collection<UserDbModel
 );
 export const registrationUserCollection: Collection<RegistrationUserDBModel> =
 	db.collection<RegistrationUserDBModel>(SETTINGS.REGISTRATION_USER_COLLECTION_NAME);
+export const revokedRefreshTokensCollection: Collection<RevokedRefreshTokenDBModel> =
+	db.collection<RevokedRefreshTokenDBModel>(SETTINGS.REVOKED_REFRESH_TOKEN_COLLECTION_NAME);
 
 export const connectDB = async (): Promise<Db> => {
 	try {

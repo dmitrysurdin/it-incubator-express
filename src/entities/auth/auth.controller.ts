@@ -14,8 +14,85 @@ const login = async (req: Request, res: Response): Promise<void> => {
 	try {
 		const user = await authRepositories.findUserByLoginOrEmail(req.body.loginOrEmail);
 
-		const accessToken = authServices.createJWT(user!._id.toString());
+		const accessToken = authServices.createJWT(user!._id.toString(), '10s');
+		const refreshToken = authServices.createJWT(user!._id.toString(), '20s');
+
+		res.cookie('refreshToken', refreshToken, {
+			httpOnly: true,
+			secure: true,
+		});
+
 		res.status(200).json({ accessToken });
+
+		return;
+	} catch (error) {
+		res.sendStatus(500);
+
+		return;
+	}
+};
+
+const refreshToken = async (req: Request, res: Response): Promise<void> => {
+	const previousRefreshToken = req.cookies.refreshToken;
+
+	if (!previousRefreshToken) {
+		res.sendStatus(401);
+
+		return;
+	}
+
+	try {
+		const isTokenValid = await authServices.validateRefreshToken(previousRefreshToken);
+
+		if (!isTokenValid) {
+			res.sendStatus(401);
+			return;
+		}
+
+		const userId = authServices.getUserIdByToken(previousRefreshToken);
+
+		await authServices.invalidatePreviousRefreshToken(userId, previousRefreshToken);
+
+		const newAccessToken = authServices.createJWT(userId, '10s');
+		const newRefreshToken = authServices.createJWT(userId, '20s');
+
+		res.cookie('refreshToken', newRefreshToken, {
+			httpOnly: true,
+			secure: true,
+		});
+
+		res.status(200).json({ accessToken: newAccessToken });
+
+		return;
+	} catch (error) {
+		res.sendStatus(500);
+
+		return;
+	}
+};
+
+const logout = async (req: Request, res: Response): Promise<void> => {
+	const previousRefreshToken = req.cookies.refreshToken;
+
+	if (!previousRefreshToken) {
+		res.sendStatus(401);
+
+		return;
+	}
+
+	try {
+		const isTokenValid = await authServices.validateRefreshToken(previousRefreshToken);
+
+		if (!isTokenValid) {
+			res.sendStatus(401);
+			return;
+		}
+
+		const userId = authServices.getUserIdByToken(previousRefreshToken);
+
+		await authServices.invalidatePreviousRefreshToken(userId, previousRefreshToken);
+
+		res.sendStatus(204);
 
 		return;
 	} catch (error) {
@@ -93,6 +170,8 @@ const confirmRegistration = async (req: Request, res: Response): Promise<void> =
 
 export const authControllers = {
 	login,
+	logout,
+	refreshToken,
 	me,
 	register,
 	resendConfirmationEmail,

@@ -1,4 +1,8 @@
-import { registrationUserCollection, userCollection } from '../../db/mongo-db';
+import {
+	registrationUserCollection,
+	revokedRefreshTokensCollection,
+	userCollection,
+} from '../../db/mongo-db';
 import { AuthUserDbModel, RegistrationUserDBModel } from './auth.types';
 import { ObjectId, WithId } from 'mongodb';
 
@@ -62,6 +66,15 @@ const updateConfirmationCodeById = async (id: string, code: string): Promise<boo
 	return !!result.matchedCount;
 };
 
+const isTokenRevoked = async (token: string): Promise<boolean> => {
+	const revokedToken = await revokedRefreshTokensCollection.findOne({ token });
+	return !!revokedToken;
+};
+
+const revokeRefreshToken = async (userId: string, token: string): Promise<void> => {
+	await revokedRefreshTokensCollection.insertOne({ userId, token });
+};
+
 export const authRepositories = {
 	findUserByLoginOrEmail,
 	findUserById,
@@ -72,4 +85,6 @@ export const authRepositories = {
 	findRegistrationUserByCode,
 	confirmRegistrationById,
 	updateConfirmationCodeById,
+	isTokenRevoked,
+	revokeRefreshToken,
 };

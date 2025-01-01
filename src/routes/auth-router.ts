@@ -8,6 +8,8 @@ import { codeValidator, emailValidator, userInputValidators } from '../entities/
 export const authRouter = Router();
 
 authRouter.post('/login', authInputValidators, inputCheckErrorsMiddleware, authControllers.login);
+authRouter.post('/refresh-token', authControllers.refreshToken);
+authRouter.post('/logout', authControllers.logout);
 authRouter.post(
 	'/registration',
 	userInputValidators,

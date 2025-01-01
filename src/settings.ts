@@ -15,6 +15,7 @@ export const SETTINGS = {
 	COMMENTS_COLLECTION_NAME: 'comments',
 	USER_COLLECTION_NAME: 'users',
 	REGISTRATION_USER_COLLECTION_NAME: 'registrationUsers',
+	REVOKED_REFRESH_TOKEN_COLLECTION_NAME: 'revokedRefreshTokensCollection',
 	PATH: {
 		BLOGS: '/blogs',
 		POSTS: '/posts',
