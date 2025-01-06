@@ -21,6 +21,7 @@ const deleteAllActiveDevicesExceptCurrent = async (req: Request, res: Response):
 	}
 
 	const previousRefreshTokenPayload = await authServices.getTokenPayload(previousRefreshToken);
+
 	const currentDeviceId = previousRefreshTokenPayload?.deviceId;
 
 	if (!currentDeviceId) {

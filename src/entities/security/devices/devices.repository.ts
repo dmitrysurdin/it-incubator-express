@@ -46,7 +46,7 @@ const updateLastActiveDateByDeviceId = async (
 
 export const devicesRepositories = {
 	getAllActiveDevices,
-	addNewSession: addNewDeviceSession,
+	addNewDeviceSession,
 	deleteDeviceSession,
 	updateLastActiveDateByDeviceId,
 	deleteAllActiveDevicesExceptCurrent,

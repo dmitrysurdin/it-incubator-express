@@ -3,6 +3,7 @@ import { authServices } from './auth.service';
 import { authRepositories } from './auth.repository';
 import { DeviceSessionDbModel } from '../security/devices/devices.types';
 import { devicesRepositories } from '../security/devices/devices.repository';
+import { v4 as uuidv4 } from 'uuid';
 
 const login = async (req: Request, res: Response): Promise<void> => {
 	const isValid = await authServices.login(req.body);
@@ -18,10 +19,10 @@ const login = async (req: Request, res: Response): Promise<void> => {
 
 		const userAgent = req.headers['user-agent'] || 'Unknown Device';
 		const ip = req.ip ?? '';
-		const deviceId = `device-${Date.now()}`;
+		const deviceId = uuidv4();
 
-		const accessToken = authServices.createJWT(user!._id.toString(), '1h');
-		const refreshToken = authServices.createJWT(user!._id.toString(), '2h', deviceId);
+		const accessToken = authServices.createJWT(user!._id.toString(), '10s');
+		const refreshToken = authServices.createJWT(user!._id.toString(), '20s', deviceId);
 
 		const session: DeviceSessionDbModel = {
 			ip,
@@ -31,7 +32,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
 			expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
 		};
 
-		await devicesRepositories.addNewSession(session);
+		await devicesRepositories.addNewDeviceSession(session);
 
 		res.cookie('refreshToken', refreshToken, {
 			httpOnly: true,
@@ -62,21 +63,29 @@ const refreshToken = async (req: Request, res: Response): Promise<void> => {
 
 		if (!isTokenValid) {
 			res.sendStatus(401);
+
 			return;
 		}
 
 		const userId = authServices.getUserIdByToken(previousRefreshToken);
-
-		await authServices.invalidatePreviousRefreshToken(userId, previousRefreshToken);
-
 		const previousRefreshTokenPayload = await authServices.getTokenPayload(previousRefreshToken);
-		const deviceId = previousRefreshTokenPayload?.deviceId ?? `device-${Date.now()}`;
+
+		const deviceId = previousRefreshTokenPayload?.deviceId;
+
+		if (!deviceId) {
+			res.sendStatus(401);
+
+			return;
+		}
+
 		const newActiveDate = new Date().toISOString();
 
-		const newAccessToken = authServices.createJWT(userId, '1h');
-		const newRefreshToken = authServices.createJWT(userId, '2h', deviceId);
+		const newAccessToken = authServices.createJWT(userId, '10s');
+		const newRefreshToken = authServices.createJWT(userId, '20s', deviceId);
 
 		await devicesRepositories.updateLastActiveDateByDeviceId(newActiveDate, deviceId);
+
+		await authServices.invalidatePreviousRefreshToken(userId, previousRefreshToken);
 
 		res.cookie('refreshToken', newRefreshToken, {
 			httpOnly: true,
