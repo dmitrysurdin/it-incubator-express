@@ -5,9 +5,10 @@ import { devicesServices } from './devices.service';
 import { authServices } from '../../auth/auth.service';
 
 const getAllActiveDevices = async (req: Request, res: Response): Promise<void> => {
-	const activeDevices = mapDeviceSessionsFromDb(await devicesRepositories.getAllActiveDevices());
+	const activeDevicesFromDb = await devicesRepositories.getAllActiveDevices();
+	const activeDevicesForClient = mapDeviceSessionsFromDb(activeDevicesFromDb);
 
-	res.status(200).json(activeDevices);
+	res.status(200).json(activeDevicesForClient);
 };
 
 const deleteAllActiveDevicesExceptCurrent = async (req: Request, res: Response): Promise<void> => {

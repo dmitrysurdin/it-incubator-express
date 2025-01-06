@@ -33,10 +33,13 @@ const findDeviceSessionByDeviceId = async (
 };
 
 const updateLastActiveDateByDeviceId = async (
-	lastActiveDate: string,
+	newActiveDate: string,
 	deviceId: string,
 ): Promise<boolean> => {
-	const result = await userSessionsCollection.updateOne({ deviceId }, { $set: { lastActiveDate } });
+	const result = await userSessionsCollection.updateOne(
+		{ deviceId },
+		{ $set: { lastActiveDate: newActiveDate } },
+	);
 
 	return !!result.matchedCount;
 };
