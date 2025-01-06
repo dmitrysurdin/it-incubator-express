@@ -3,7 +3,7 @@ interface CommentatorInfo {
 	userLogin: string;
 }
 
-export interface CommentDBModel {
+export interface CommentDbModel {
 	postId: string;
 	content: string;
 	commentatorInfo: CommentatorInfo;

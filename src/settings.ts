@@ -16,12 +16,15 @@ export const SETTINGS = {
 	USER_COLLECTION_NAME: 'users',
 	REGISTRATION_USER_COLLECTION_NAME: 'registrationUsers',
 	REVOKED_REFRESH_TOKEN_COLLECTION_NAME: 'revokedRefreshTokensCollection',
+	DEVICE_SESSIONS_COLLECTION_NAME: 'deviceSessions',
+	API_LOGS_COLLECTION_NAME: 'apiLogs',
 	PATH: {
 		BLOGS: '/blogs',
 		POSTS: '/posts',
 		COMMENTS: '/comments',
 		USERS: '/users',
 		AUTH: '/auth',
+		SECURITY: '/security',
 		TESTING: '/testing',
 	},
 };

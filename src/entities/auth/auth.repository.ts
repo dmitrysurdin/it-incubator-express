@@ -3,7 +3,7 @@ import {
 	revokedRefreshTokensCollection,
 	userCollection,
 } from '../../db/mongo-db';
-import { AuthUserDbModel, RegistrationUserDBModel } from './auth.types';
+import { AuthUserDbModel, RegistrationUserDbModel } from './auth.types';
 import { ObjectId, WithId } from 'mongodb';
 
 const findUserByLoginOrEmail = async (
@@ -20,23 +20,23 @@ const findUserById = async (id: string): Promise<WithId<AuthUserDbModel> | null>
 
 const findRegistrationUserByEmail = async (
 	email: string,
-): Promise<WithId<RegistrationUserDBModel> | null> => {
+): Promise<WithId<RegistrationUserDbModel> | null> => {
 	return registrationUserCollection.findOne({ 'accountData.email': email });
 };
 
 const findRegistrationUserByLogin = async (
 	login: string,
-): Promise<WithId<RegistrationUserDBModel> | null> => {
+): Promise<WithId<RegistrationUserDbModel> | null> => {
 	return registrationUserCollection.findOne({ 'accountData.login': login });
 };
 
 const findRegistrationUserByCode = async (
 	code: string,
-): Promise<WithId<RegistrationUserDBModel> | null> => {
+): Promise<WithId<RegistrationUserDbModel> | null> => {
 	return registrationUserCollection.findOne({ 'emailConfirmation.confirmationCode': code });
 };
 
-const createUser = async (user: RegistrationUserDBModel): Promise<string> => {
+const createUser = async (user: RegistrationUserDbModel): Promise<string> => {
 	const result = await registrationUserCollection.insertOne({ ...user });
 
 	return result.insertedId.toString();

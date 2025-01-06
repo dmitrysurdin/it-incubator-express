@@ -4,26 +4,36 @@ import { authInputValidators } from '../entities/auth/middlewares';
 import { authControllers } from '../entities/auth/auth.controller';
 import { bearerAuthMiddleware } from '../middlewares/authMiddleware';
 import { codeValidator, emailValidator, userInputValidators } from '../entities/users/middlewares';
+import { rateLimiterMiddleware } from '../middlewares/rateLimiterMiddleware';
 
 export const authRouter = Router();
 
-authRouter.post('/login', authInputValidators, inputCheckErrorsMiddleware, authControllers.login);
+authRouter.post(
+	'/login',
+	rateLimiterMiddleware,
+	authInputValidators,
+	inputCheckErrorsMiddleware,
+	authControllers.login,
+);
 authRouter.post('/refresh-token', authControllers.refreshToken);
 authRouter.post('/logout', authControllers.logout);
 authRouter.post(
 	'/registration',
+	rateLimiterMiddleware,
 	userInputValidators,
 	inputCheckErrorsMiddleware,
 	authControllers.register,
 );
 authRouter.post(
 	'/registration-email-resending',
+	rateLimiterMiddleware,
 	[emailValidator],
 	inputCheckErrorsMiddleware,
 	authControllers.resendConfirmationEmail,
 );
 authRouter.post(
 	'/registration-confirmation',
+	rateLimiterMiddleware,
 	[codeValidator],
 	inputCheckErrorsMiddleware,
 	authControllers.confirmRegistration,

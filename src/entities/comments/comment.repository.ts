@@ -1,8 +1,8 @@
 import { commentsCollection } from '../../db/mongo-db';
 import { ObjectId, WithId } from 'mongodb';
-import { CommentClientModel, CommentDBModel } from './comment.types';
+import { CommentClientModel, CommentDbModel } from './comment.types';
 
-const findById = async (id: string): Promise<WithId<CommentDBModel> | null> => {
+const findById = async (id: string): Promise<WithId<CommentDbModel> | null> => {
 	return commentsCollection.findOne({ _id: new ObjectId(id) });
 };
 

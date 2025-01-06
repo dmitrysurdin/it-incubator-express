@@ -1,7 +1,7 @@
 import { WithId } from 'mongodb';
-import { CommentClientModel, CommentDBModel } from './comment.types';
+import { CommentClientModel, CommentDbModel } from './comment.types';
 
-export const mapCommentFromDb = (commentDb: WithId<CommentDBModel>): CommentClientModel => {
+export const mapCommentFromDb = (commentDb: WithId<CommentDbModel>): CommentClientModel => {
 	return {
 		id: commentDb._id.toString(),
 		content: commentDb.content,

@@ -4,7 +4,7 @@ import {
 	AuthLoginInputModel,
 	AuthUserClientModel,
 	CustomJwtPayload,
-	RegistrationUserDBModel,
+	RegistrationUserDbModel,
 	RegistrationUserInputModel,
 } from './auth.types';
 import jwt from 'jsonwebtoken';
@@ -40,13 +40,13 @@ const getUserById = async (userId: string | null): Promise<boolean | AuthUserCli
 	return mapAuthUserFromDb(user);
 };
 
-const createJWT = (userId: string, expirationDate: string = '10s'): string => {
+const createJWT = (userId: string, expirationDate: string = '10s', deviceId?: string): string => {
 	const secret = process.env.JWT_SECRET;
 	if (!secret) {
 		throw new Error('JWT_SECRET is not available');
 	}
 
-	return jwt.sign({ userId }, secret, { expiresIn: expirationDate });
+	return jwt.sign({ userId, deviceId }, secret, { expiresIn: expirationDate });
 };
 
 const getUserIdByToken = (token: string): string => {
@@ -102,7 +102,7 @@ const register = async (userBody: RegistrationUserInputModel): Promise<boolean> 
 	const passwordSalt = await bcrypt.genSalt(10);
 	const passwordHash = await bcrypt.hash(password, passwordSalt);
 
-	const newUser: RegistrationUserDBModel = {
+	const newUser: RegistrationUserDbModel = {
 		accountData: {
 			login,
 			email,
@@ -191,6 +191,20 @@ const validateRefreshToken = async (token: string): Promise<boolean> => {
 	}
 };
 
+const getTokenPayload = async (token: string): Promise<CustomJwtPayload | null> => {
+	const secret = process.env.JWT_SECRET;
+
+	if (!secret) {
+		throw new Error('JWT_SECRET is not available');
+	}
+
+	try {
+		return jwt.verify(token, secret) as CustomJwtPayload;
+	} catch (err) {
+		return null;
+	}
+};
+
 const invalidatePreviousRefreshToken = async (userId: string, token: string): Promise<void> => {
 	await authRepositories.revokeRefreshToken(userId, token);
 };
@@ -200,6 +214,7 @@ export const authServices = {
 	createJWT,
 	invalidatePreviousRefreshToken,
 	validateRefreshToken,
+	getTokenPayload,
 	getUserIdByToken,
 	getUserById,
 	register,

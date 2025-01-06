@@ -21,6 +21,7 @@ export interface AuthUserClientModel {
 
 export interface CustomJwtPayload extends JwtPayload {
 	userId: string;
+	deviceId?: string;
 }
 
 export interface RegistrationUserInputModel {
@@ -29,7 +30,7 @@ export interface RegistrationUserInputModel {
 	password: string;
 }
 
-export interface RegistrationUserDBModel {
+export interface RegistrationUserDbModel {
 	accountData: {
 		login: string;
 		email: string;
@@ -44,7 +45,7 @@ export interface RegistrationUserDBModel {
 	};
 }
 
-export interface RevokedRefreshTokenDBModel {
+export interface RevokedRefreshTokenDbModel {
 	userId: string;
 	token: string;
 }
