@@ -120,6 +120,13 @@ const logout = async (req: Request, res: Response): Promise<void> => {
 			return;
 		}
 
+		const previousRefreshTokenPayload = await authServices.getTokenPayload(previousRefreshToken);
+		const deviceId = previousRefreshTokenPayload?.deviceId;
+
+		if (deviceId) {
+			await devicesRepositories.deleteDeviceSession(deviceId);
+		}
+
 		const userId = authServices.getUserIdByToken(previousRefreshToken);
 
 		await authServices.invalidatePreviousRefreshToken(userId, previousRefreshToken);
