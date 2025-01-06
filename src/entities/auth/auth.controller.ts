@@ -18,7 +18,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
 		const user = await authRepositories.findUserByLoginOrEmail(req.body.loginOrEmail);
 
 		const userAgent = req.headers['user-agent'] || 'Unknown Device';
-		const ip = (req.headers['x-forwarded-for'] as string) || (req.socket.remoteAddress as string);
+		const ip = req.ip ?? '';
 		const deviceId = uuidv4();
 
 		const accessToken = authServices.createJWT(user!._id.toString(), '10s');
