@@ -42,6 +42,14 @@ const deleteAllActiveDevicesExceptCurrent = async (req: Request, res: Response):
 const deleteDeviceSession = async (req: Request, res: Response): Promise<void> => {
 	const deviceId = req.params.deviceId;
 
+	const session = await devicesRepositories.findDeviceSessionByDeviceId(deviceId);
+
+	if (!session || session?.deviceId !== deviceId) {
+		res.sendStatus(403);
+
+		return;
+	}
+
 	const isDeleted = await devicesRepositories.deleteDeviceSession(deviceId);
 
 	if (!isDeleted) {
