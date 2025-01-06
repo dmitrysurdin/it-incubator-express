@@ -19,26 +19,39 @@ const deleteAllActiveDevicesExceptCurrent = async (req: Request, res: Response):
 
 		return;
 	}
+	try {
+		const isTokenValid = await authServices.validateRefreshToken(previousRefreshToken);
 
-	const previousRefreshTokenPayload = await authServices.getTokenPayload(previousRefreshToken);
+		if (!isTokenValid) {
+			res.sendStatus(401);
 
-	const currentDeviceId = previousRefreshTokenPayload?.deviceId;
+			return;
+		}
 
-	if (!currentDeviceId) {
-		res.sendStatus(404);
+		const previousRefreshTokenPayload = await authServices.getTokenPayload(previousRefreshToken);
 
-		return;
-	}
+		const currentDeviceId = previousRefreshTokenPayload?.deviceId;
 
-	const isDeleted = await devicesServices.deleteAllActiveDevicesExceptCurrent(currentDeviceId);
+		if (!currentDeviceId) {
+			res.sendStatus(404);
 
-	if (!isDeleted) {
+			return;
+		}
+
+		const isDeleted = await devicesServices.deleteAllActiveDevicesExceptCurrent(currentDeviceId);
+
+		if (!isDeleted) {
+			res.sendStatus(500);
+
+			return;
+		}
+
+		res.sendStatus(204);
+	} catch (e) {
 		res.sendStatus(500);
 
 		return;
 	}
-
-	res.sendStatus(204);
 };
 
 const deleteDeviceSession = async (req: Request, res: Response): Promise<void> => {
@@ -52,15 +65,21 @@ const deleteDeviceSession = async (req: Request, res: Response): Promise<void> =
 		return;
 	}
 
-	const isDeleted = await devicesRepositories.deleteDeviceSession(deviceId);
+	try {
+		const isDeleted = await devicesRepositories.deleteDeviceSession(deviceId);
 
-	if (!isDeleted) {
-		res.sendStatus(404);
+		if (!isDeleted) {
+			res.sendStatus(404);
+
+			return;
+		}
+
+		res.sendStatus(204);
+	} catch (e) {
+		res.sendStatus(500);
 
 		return;
 	}
-
-	res.sendStatus(204);
 };
 
 export const devicesControllers = {
