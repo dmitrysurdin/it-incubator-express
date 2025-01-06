@@ -37,6 +37,7 @@ const login = async (req: Request, res: Response): Promise<void> => {
 		res.cookie('refreshToken', refreshToken, {
 			httpOnly: true,
 			secure: true,
+			maxAge: 20000,
 		});
 
 		res.status(200).json({ accessToken });
@@ -90,6 +91,7 @@ const refreshToken = async (req: Request, res: Response): Promise<void> => {
 		res.cookie('refreshToken', newRefreshToken, {
 			httpOnly: true,
 			secure: true,
+			maxAge: 20000,
 		});
 
 		res.status(200).json({ accessToken: newAccessToken });
