@@ -12,15 +12,15 @@ const getAllActiveDevices = async (req: Request, res: Response): Promise<void> =
 };
 
 const deleteAllActiveDevicesExceptCurrent = async (req: Request, res: Response): Promise<void> => {
-	const previousRefreshToken = req.cookies.refreshToken;
+	const refreshToken = req.cookies.refreshToken;
 
-	if (!previousRefreshToken) {
+	if (!refreshToken) {
 		res.sendStatus(401);
 
 		return;
 	}
 	try {
-		const isTokenValid = await authServices.validateRefreshToken(previousRefreshToken);
+		const isTokenValid = await authServices.validateRefreshToken(refreshToken);
 
 		if (!isTokenValid) {
 			res.sendStatus(401);
@@ -28,9 +28,9 @@ const deleteAllActiveDevicesExceptCurrent = async (req: Request, res: Response):
 			return;
 		}
 
-		const previousRefreshTokenPayload = await authServices.getTokenPayload(previousRefreshToken);
+		const refreshTokenPayload = await authServices.getTokenPayload(refreshToken);
 
-		const currentDeviceId = previousRefreshTokenPayload?.deviceId;
+		const currentDeviceId = refreshTokenPayload?.deviceId;
 
 		if (!currentDeviceId) {
 			res.sendStatus(404);
