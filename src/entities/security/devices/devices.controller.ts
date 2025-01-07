@@ -64,12 +64,15 @@ const deleteDeviceSession = async (req: Request, res: Response): Promise<void> =
 	try {
 		const isDeleted = await devicesRepositories.deleteDeviceSession(deviceId);
 
+		const refreshTokenPayload = await authServices.getTokenPayload(refreshToken);
+		const currentDeviceId = refreshTokenPayload?.deviceId;
+
 		if (!isDeleted) {
 			res.sendStatus(404);
 
 			return;
 		}
-		if (session?.deviceId === deviceId) {
+		if (currentDeviceId === deviceId) {
 			await authServices.invalidatePreviousRefreshToken(userId, refreshToken);
 		}
 
