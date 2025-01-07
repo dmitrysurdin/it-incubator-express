@@ -55,7 +55,7 @@ const deleteDeviceSession = async (req: Request, res: Response): Promise<void> =
 		return;
 	}
 
-	if (session?.userId !== userId) {
+	if (!session || session?.userId !== userId) {
 		res.sendStatus(403);
 
 		return;
@@ -73,7 +73,7 @@ const deleteDeviceSession = async (req: Request, res: Response): Promise<void> =
 			return;
 		}
 		if (currentDeviceId === deviceId) {
-			await authServices.invalidatePreviousRefreshToken(userId, refreshToken);
+			await authServices.invalidateRefreshToken(userId, refreshToken);
 		}
 
 		res.sendStatus(204);

@@ -13,6 +13,7 @@ import { userRepositories } from '../users/user.repository';
 import { v4 as uuidv4 } from 'uuid';
 import { add } from 'date-fns';
 import { emailService } from '../../services/email/email-service';
+import { devicesRepositories } from '../security/devices/devices.repository';
 
 const login = async (userBody: AuthLoginInputModel): Promise<boolean> => {
 	const { loginOrEmail, password } = userBody;
@@ -181,11 +182,27 @@ const validateRefreshToken = async (token: string): Promise<boolean> => {
 	}
 
 	try {
-		jwt.verify(token, secret);
+		const payload = jwt.verify(token, secret) as CustomJwtPayload;
+
+		if (!payload?.deviceId) {
+			return false;
+		}
 
 		const isTokenRevoked = await authRepositories.isTokenRevoked(token);
 
-		return !isTokenRevoked;
+		if (isTokenRevoked) {
+			return false;
+		}
+
+		const session = await devicesRepositories.findDeviceSessionByDeviceId(payload.deviceId);
+
+		if (!session) {
+			await authServices.invalidateRefreshToken(payload.userId, token);
+
+			return false;
+		}
+
+		return !!session;
 	} catch (error) {
 		return false;
 	}
@@ -205,14 +222,14 @@ const getTokenPayload = async (token: string): Promise<CustomJwtPayload | null> 
 	}
 };
 
-const invalidatePreviousRefreshToken = async (userId: string, token: string): Promise<void> => {
+const invalidateRefreshToken = async (userId: string, token: string): Promise<void> => {
 	await authRepositories.revokeRefreshToken(userId, token);
 };
 
 export const authServices = {
 	login,
 	createJWT,
-	invalidatePreviousRefreshToken,
+	invalidateRefreshToken,
 	validateRefreshToken,
 	getTokenPayload,
 	getUserIdByToken,

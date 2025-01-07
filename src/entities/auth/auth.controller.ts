@@ -71,7 +71,7 @@ const refreshToken = async (req: Request, res: Response): Promise<void> => {
 
 		await devicesRepositories.updateLastActiveDateByDeviceId(newActiveDate, deviceId);
 
-		await authServices.invalidatePreviousRefreshToken(userId, previousRefreshToken);
+		await authServices.invalidateRefreshToken(userId, previousRefreshToken);
 
 		res.cookie('refreshToken', newRefreshToken, {
 			httpOnly: true,
@@ -100,7 +100,7 @@ const logout = async (req: Request, res: Response): Promise<void> => {
 			await devicesRepositories.deleteDeviceSession(deviceId);
 		}
 
-		await authServices.invalidatePreviousRefreshToken(userId, previousRefreshToken);
+		await authServices.invalidateRefreshToken(userId, previousRefreshToken);
 
 		res.sendStatus(204);
 
