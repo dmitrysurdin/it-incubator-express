@@ -45,7 +45,8 @@ const deleteAllActiveDevicesExceptCurrent = async (req: Request, res: Response):
 
 const deleteDeviceSession = async (req: Request, res: Response): Promise<void> => {
 	const deviceId = req.params.deviceId;
-
+	const userId = req.userId;
+	const refreshToken = req.cookies.refreshToken;
 	const session = await devicesRepositories.findDeviceSessionByDeviceId(deviceId);
 
 	if (session?.deviceId !== deviceId) {
@@ -54,7 +55,7 @@ const deleteDeviceSession = async (req: Request, res: Response): Promise<void> =
 		return;
 	}
 
-	if (session?.userId !== req.userId) {
+	if (session?.userId !== userId) {
 		res.sendStatus(403);
 
 		return;
@@ -67,6 +68,9 @@ const deleteDeviceSession = async (req: Request, res: Response): Promise<void> =
 			res.sendStatus(404);
 
 			return;
+		}
+		if (session?.deviceId === deviceId) {
+			await authServices.invalidatePreviousRefreshToken(userId, refreshToken);
 		}
 
 		res.sendStatus(204);
