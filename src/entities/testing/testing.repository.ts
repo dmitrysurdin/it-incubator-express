@@ -4,6 +4,7 @@ import {
 	commentsCollection,
 	postCollection,
 	registrationUserCollection,
+	revokedRefreshTokensCollection,
 	userCollection,
 	userSessionsCollection,
 } from '../../db/mongo-db';
@@ -16,6 +17,7 @@ const clearDb = async (): Promise<void> => {
 	await registrationUserCollection.deleteMany({});
 	await userSessionsCollection.deleteMany({});
 	await apiLogsCollection.deleteMany({});
+	await revokedRefreshTokensCollection.deleteMany({});
 };
 
 export const testingRepositories = {

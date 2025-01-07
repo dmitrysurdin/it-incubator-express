@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { inputCheckErrorsMiddleware } from '../middlewares/inputCheckErrorsMiddleware';
 import { authInputValidators } from '../entities/auth/middlewares';
 import { authControllers } from '../entities/auth/auth.controller';
-import { bearerAuthMiddleware } from '../middlewares/authMiddleware';
+import { bearerAuthMiddleware, refreshTokenAuthMiddleware } from '../middlewares/authMiddleware';
 import { codeValidator, emailValidator, userInputValidators } from '../entities/users/middlewares';
 import { rateLimiterMiddleware } from '../middlewares/rateLimiterMiddleware';
 
@@ -15,8 +15,8 @@ authRouter.post(
 	inputCheckErrorsMiddleware,
 	authControllers.login,
 );
-authRouter.post('/refresh-token', authControllers.refreshToken);
-authRouter.post('/logout', authControllers.logout);
+authRouter.post('/refresh-token', refreshTokenAuthMiddleware, authControllers.refreshToken);
+authRouter.post('/logout', refreshTokenAuthMiddleware, authControllers.logout);
 authRouter.post(
 	'/registration',
 	rateLimiterMiddleware,

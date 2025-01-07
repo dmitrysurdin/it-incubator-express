@@ -53,25 +53,10 @@ const login = async (req: Request, res: Response): Promise<void> => {
 const refreshToken = async (req: Request, res: Response): Promise<void> => {
 	const previousRefreshToken = req.cookies.refreshToken;
 
-	if (!previousRefreshToken) {
-		res.sendStatus(401);
-
-		return;
-	}
-
 	try {
-		const isTokenValid = await authServices.validateRefreshToken(previousRefreshToken);
-
-		if (!isTokenValid) {
-			res.sendStatus(401);
-
-			return;
-		}
-
-		const userId = authServices.getUserIdByToken(previousRefreshToken);
 		const previousRefreshTokenPayload = await authServices.getTokenPayload(previousRefreshToken);
-
 		const deviceId = previousRefreshTokenPayload?.deviceId;
+		const userId = req.userId ?? '';
 
 		if (!deviceId) {
 			res.sendStatus(401);
@@ -106,28 +91,14 @@ const refreshToken = async (req: Request, res: Response): Promise<void> => {
 const logout = async (req: Request, res: Response): Promise<void> => {
 	const previousRefreshToken = req.cookies.refreshToken;
 
-	if (!previousRefreshToken) {
-		res.sendStatus(401);
-
-		return;
-	}
-
 	try {
-		const isTokenValid = await authServices.validateRefreshToken(previousRefreshToken);
-
-		if (!isTokenValid) {
-			res.sendStatus(401);
-			return;
-		}
-
 		const previousRefreshTokenPayload = await authServices.getTokenPayload(previousRefreshToken);
 		const deviceId = previousRefreshTokenPayload?.deviceId;
+		const userId = req.userId ?? '';
 
 		if (deviceId) {
 			await devicesRepositories.deleteDeviceSession(deviceId);
 		}
-
-		const userId = authServices.getUserIdByToken(previousRefreshToken);
 
 		await authServices.invalidatePreviousRefreshToken(userId, previousRefreshToken);
 
