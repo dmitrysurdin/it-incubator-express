@@ -49,7 +49,7 @@ const deleteDeviceSession = async (req: Request, res: Response): Promise<void> =
 	const session = await devicesRepositories.findDeviceSessionByDeviceId(deviceId);
 
 	if (session?.deviceId !== deviceId || session?.userId !== req.userId) {
-		res.sendStatus(403);
+		res.sendStatus(404);
 
 		return;
 	}
