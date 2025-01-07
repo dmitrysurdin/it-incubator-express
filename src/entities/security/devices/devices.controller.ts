@@ -5,7 +5,9 @@ import { devicesServices } from './devices.service';
 import { authServices } from '../../auth/auth.service';
 
 const getAllActiveDevices = async (req: Request, res: Response): Promise<void> => {
-	const activeDevicesFromDb = await devicesRepositories.getAllActiveDevices();
+	const userId = req.userId ?? '';
+
+	const activeDevicesFromDb = await devicesRepositories.getAllActiveDevices(userId);
 	const activeDevicesForClient = mapDeviceSessionsFromDb(activeDevicesFromDb);
 
 	res.status(200).json(activeDevicesForClient);
@@ -14,20 +16,7 @@ const getAllActiveDevices = async (req: Request, res: Response): Promise<void> =
 const deleteAllActiveDevicesExceptCurrent = async (req: Request, res: Response): Promise<void> => {
 	const refreshToken = req.cookies.refreshToken;
 
-	if (!refreshToken) {
-		res.sendStatus(401);
-
-		return;
-	}
 	try {
-		const isTokenValid = await authServices.validateRefreshToken(refreshToken);
-
-		if (!isTokenValid) {
-			res.sendStatus(401);
-
-			return;
-		}
-
 		const refreshTokenPayload = await authServices.getTokenPayload(refreshToken);
 
 		const currentDeviceId = refreshTokenPayload?.deviceId;
@@ -59,7 +48,7 @@ const deleteDeviceSession = async (req: Request, res: Response): Promise<void> =
 
 	const session = await devicesRepositories.findDeviceSessionByDeviceId(deviceId);
 
-	if (!session || session?.deviceId !== deviceId || session?.userId !== req.userId) {
+	if (session?.deviceId !== deviceId || session?.userId !== req.userId) {
 		res.sendStatus(403);
 
 		return;

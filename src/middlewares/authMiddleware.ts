@@ -48,3 +48,43 @@ export const bearerAuthMiddleware = (req: Request, res: Response, next: NextFunc
 		return;
 	}
 };
+
+export const refreshTokenAuthMiddleware = async (
+	req: Request,
+	res: Response,
+	next: NextFunction,
+): Promise<void> => {
+	const refreshToken = req.cookies.refreshToken;
+
+	if (!refreshToken) {
+		res.sendStatus(401);
+
+		return;
+	}
+
+	try {
+		const isTokenValid = await authServices.validateRefreshToken(refreshToken);
+
+		if (!isTokenValid) {
+			res.sendStatus(401);
+
+			return;
+		}
+
+		const refreshTokenPayload = await authServices.getTokenPayload(refreshToken);
+		const userId = refreshTokenPayload?.userId;
+
+		if (!userId) {
+			res.sendStatus(401);
+
+			return;
+		}
+
+		req.userId = userId;
+		next();
+	} catch (e) {
+		res.sendStatus(401);
+
+		return;
+	}
+};

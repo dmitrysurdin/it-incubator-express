@@ -2,8 +2,10 @@ import { userSessionsCollection } from '../../../db/mongo-db';
 import { DeviceSessionDbModel } from './devices.types';
 import { WithId } from 'mongodb';
 
-const getAllActiveDevices = async (): Promise<Array<WithId<DeviceSessionDbModel>>> => {
-	return userSessionsCollection.find({}).toArray();
+const getAllActiveDevices = async (
+	userId: string,
+): Promise<Array<WithId<DeviceSessionDbModel>>> => {
+	return userSessionsCollection.find({ userId }).toArray();
 };
 
 const addNewDeviceSession = async (session: DeviceSessionDbModel): Promise<string> => {
