@@ -1,11 +1,11 @@
-import { userCollection } from '../../db/mongo-db';
 import { UserDbModel } from './user.types';
-import { ObjectId, SortDirection, WithId } from 'mongodb';
+import { SortOrder } from 'mongoose';
+import { UserModelClass } from '../../db/models';
+import { ObjectId, WithId } from 'mongodb';
 
 const create = async (user: UserDbModel): Promise<string> => {
-	const result = await userCollection.insertOne({ ...user });
-
-	return result.insertedId.toString();
+	const result = await UserModelClass.create(user);
+	return result._id.toString();
 };
 
 const getAll = async ({
@@ -18,7 +18,7 @@ const getAll = async ({
 }: {
 	limit: number;
 	skip: number;
-	sortDirection: SortDirection;
+	sortDirection: SortOrder;
 	sortBy: string;
 	searchLoginTerm: string | null;
 	searchEmailTerm: string | null;
@@ -38,29 +38,30 @@ const getAll = async ({
 			filter.$or.push({ email: { $regex: searchEmailTerm, $options: 'i' } });
 		}
 	}
-	const items = await userCollection
-		.find(filter)
-		.sort(sortBy, sortDirection)
+
+	const items = await UserModelClass.find(filter)
+		.sort({ [sortBy]: sortDirection })
 		.skip(skip)
 		.limit(limit)
-		.toArray();
-	const totalCount = await userCollection.countDocuments(filter);
+		.lean();
+
+	const totalCount = await UserModelClass.countDocuments(filter);
 
 	return { items, totalCount };
 };
 
 const remove = async (id: string): Promise<boolean> => {
-	const result = await userCollection.deleteOne({ _id: new ObjectId(id) });
+	const result = await UserModelClass.deleteOne({ _id: new ObjectId(id) });
 
-	return !!result.deletedCount;
+	return result.deletedCount > 0;
 };
 
 const findByLogin = async (login: string): Promise<UserDbModel | null> => {
-	return await userCollection.findOne({ login });
+	return UserModelClass.findOne({ login }).lean();
 };
 
 const findByEmail = async (email: string): Promise<UserDbModel | null> => {
-	return await userCollection.findOne({ email });
+	return UserModelClass.findOne({ email }).lean();
 };
 
 export const userRepositories = {

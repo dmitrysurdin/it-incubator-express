@@ -1,12 +1,12 @@
-import { BlogModel } from './blog.types';
-import { blogCollection, postCollection } from '../../db/mongo-db';
-import { ObjectId, SortDirection, WithId } from 'mongodb';
-import { PostModel } from '../posts/post.types';
+import { BlogDbModel } from './blog.types';
+import { PostDbModel } from '../posts/post.types';
+import { SortOrder } from 'mongoose';
+import { BlogModelClass, PostModelClass } from '../../db/models';
+import { WithId } from 'mongodb';
 
-const create = async (blog: BlogModel): Promise<string> => {
-	const result = await blogCollection.insertOne({ ...blog });
-
-	return result.insertedId.toString();
+const create = async (blog: BlogDbModel): Promise<string> => {
+	const result = await BlogModelClass.create(blog);
+	return result._id.toString();
 };
 
 const getAll = async ({
@@ -18,22 +18,22 @@ const getAll = async ({
 }: {
 	limit: number;
 	skip: number;
-	sortDirection: SortDirection;
+	sortDirection: SortOrder;
 	sortBy: string;
 	searchNameTerm: string | null;
 }): Promise<{
 	totalCount: number;
-	items: Array<WithId<BlogModel>>;
+	items: Array<WithId<BlogDbModel>>;
 }> => {
 	const filter = searchNameTerm ? { name: { $regex: searchNameTerm, $options: 'i' } } : {};
 
-	const items = await blogCollection
-		.find(filter)
-		.sort(sortBy, sortDirection)
+	const items = await BlogModelClass.find(filter)
+		.sort({ [sortBy]: sortDirection })
 		.skip(skip)
 		.limit(limit)
-		.toArray();
-	const totalCount = await blogCollection.countDocuments(filter);
+		.lean();
+
+	const totalCount = await BlogModelClass.countDocuments(filter);
 
 	return { items, totalCount };
 };
@@ -49,45 +49,42 @@ const getAllPostsByBlogId = async ({
 	blogId: string;
 	limit: number;
 	skip: number;
-	sortDirection: SortDirection;
+	sortDirection: SortOrder;
 	sortBy: string;
 	searchNameTerm: string | null;
 }): Promise<{
 	totalCount: number;
-	items: Array<WithId<PostModel>>;
+	items: Array<WithId<PostDbModel>>;
 }> => {
-	const filter = searchNameTerm ? { name: { $regex: searchNameTerm, $options: 'i' } } : { blogId };
-	const sortOption: [string, SortDirection][] = [[sortBy, sortDirection]];
+	const filter = searchNameTerm
+		? { blogId, name: { $regex: searchNameTerm, $options: 'i' } }
+		: { blogId };
 
-	const items = await postCollection
-		.find(filter)
-		.sort(sortOption)
+	const items = await PostModelClass.find(filter)
+		.sort({ [sortBy]: sortDirection })
 		.skip(skip)
 		.limit(limit)
-		.toArray();
-	const totalCount = await postCollection.countDocuments(filter);
+		.lean();
+
+	const totalCount = await PostModelClass.countDocuments(filter);
 
 	return { items, totalCount };
 };
 
-const findById = async (id: string): Promise<WithId<BlogModel> | null> => {
-	return blogCollection.findOne({ _id: new ObjectId(id) });
+const findById = async (id: string): Promise<WithId<BlogDbModel> | null> => {
+	return BlogModelClass.findById(id).lean();
 };
 
-const update = async (id: string, updatedBlog: BlogModel): Promise<boolean> => {
-	const { name, description, websiteUrl } = updatedBlog;
-	const result = await blogCollection.updateOne(
-		{ _id: new ObjectId(id) },
-		{ $set: { name, description, websiteUrl } },
-	);
+const update = async (id: string, updatedBlog: Partial<BlogDbModel>): Promise<boolean> => {
+	const result = await BlogModelClass.updateOne({ _id: id }, { $set: updatedBlog });
 
-	return !!result.matchedCount;
+	return result.matchedCount > 0;
 };
 
 const remove = async (id: string): Promise<boolean> => {
-	const result = await blogCollection.deleteOne({ _id: new ObjectId(id) });
+	const result = await BlogModelClass.deleteOne({ _id: id });
 
-	return !!result.deletedCount;
+	return result.deletedCount > 0;
 };
 
 export const blogRepositories = {

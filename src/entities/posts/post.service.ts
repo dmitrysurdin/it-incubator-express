@@ -2,22 +2,23 @@ import {
 	CommentForPostClientModel,
 	CommentForPostDbModel,
 	PostClientModel,
-	PostModel,
+	PostDbModel,
 } from './post.types';
 import { blogRepositories } from '../blogs/blog.repository';
 import { postRepositories } from './post.repository';
 import { mapCommentsFromDb, mapPostFromDb, mapPostsFromDb } from './post.helpers';
 import { SortDirection } from 'mongodb';
 import { authRepositories } from '../auth/auth.repository';
+import { SortOrder } from 'mongoose';
 
-const create = async (post: PostModel): Promise<PostClientModel | null> => {
+const create = async (post: PostDbModel): Promise<PostClientModel | null> => {
 	const blog = await blogRepositories.findById(post.blogId);
 
 	if (!blog) {
 		return null;
 	}
 
-	const newPost: PostModel = {
+	const newPost: PostDbModel = {
 		...post,
 		blogName: blog?.name,
 		createdAt: new Date().toISOString(),
@@ -54,7 +55,7 @@ const getAll = async ({
 		limit,
 		validatedPageNumber,
 		skip: (validatedPageNumber - 1) * limit,
-		sortDirection: (sortDirection as SortDirection) ?? 'desc',
+		sortDirection: (sortDirection as SortOrder) ?? 'desc',
 		sortBy: sortBy ?? 'createdAt',
 		searchNameTerm: searchNameTerm ?? null,
 	};
@@ -83,7 +84,7 @@ const findById = async (id: string): Promise<PostClientModel | null> => {
 	return mapPostFromDb(postFromDb);
 };
 
-const update = async (id: string, updatedPost: PostModel): Promise<boolean> => {
+const update = async (id: string, updatedPost: PostDbModel): Promise<boolean> => {
 	return await postRepositories.update(id, updatedPost);
 };
 
@@ -144,7 +145,7 @@ const getAllCommentsForPost = async ({
 		limit,
 		validatedPageNumber,
 		skip: (validatedPageNumber - 1) * limit,
-		sortDirection: (sortDirection as SortDirection) ?? 'desc',
+		sortDirection: (sortDirection as SortOrder) ?? 'desc',
 		sortBy: sortBy ?? 'createdAt',
 		postId,
 	};

@@ -1,6 +1,6 @@
-import { BlogModel } from '../../src/entities/blogs/blog.types';
+import { BlogDbModel } from '../../src/entities/blogs/blog.types';
 
-export const blogToCreate: BlogModel = {
+export const blogToCreate: BlogDbModel = {
 	name: 'created name',
 	description: 'created blog description',
 	websiteUrl: 'https://test.com',

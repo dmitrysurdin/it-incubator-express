@@ -3,10 +3,10 @@ import {
 	CommentForPostClientModel,
 	CommentForPostDbModel,
 	PostClientModel,
-	PostModel,
+	PostDbModel,
 } from './post.types';
 
-export const mapPostFromDb = (postDb: WithId<PostModel>): PostClientModel => {
+export const mapPostFromDb = (postDb: WithId<PostDbModel>): PostClientModel => {
 	return {
 		id: postDb._id.toString(),
 		title: postDb.title,
@@ -18,7 +18,7 @@ export const mapPostFromDb = (postDb: WithId<PostModel>): PostClientModel => {
 	};
 };
 
-export const mapPostsFromDb = (postsDb: Array<WithId<PostModel>>): Array<PostClientModel> => {
+export const mapPostsFromDb = (postsDb: Array<WithId<PostDbModel>>): Array<PostClientModel> => {
 	return postsDb.map(mapPostFromDb);
 };
 

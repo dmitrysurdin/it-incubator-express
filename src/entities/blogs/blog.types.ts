@@ -1,4 +1,4 @@
-export interface BlogModel {
+export interface BlogDbModel {
 	name: string;
 	description: string;
 	websiteUrl: string;
@@ -8,4 +8,4 @@ export interface BlogModel {
 
 export type BlogClientModel = {
 	id: string;
-} & BlogModel;
+} & BlogDbModel;

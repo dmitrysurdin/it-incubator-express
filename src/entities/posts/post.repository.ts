@@ -1,11 +1,12 @@
-import { CommentForPostDbModel, PostModel } from './post.types';
-import { ObjectId, SortDirection, WithId } from 'mongodb';
-import { commentsCollection, postCollection } from '../../db/mongo-db';
+import { PostDbModel, CommentForPostDbModel } from './post.types';
+import { SortOrder } from 'mongoose';
+import { WithId } from 'mongodb';
+import { CommentModelClass, PostModelClass } from '../../db/models';
 
-const create = async (post: PostModel): Promise<string> => {
-	const result = await postCollection.insertOne({ ...post });
+const create = async (post: PostDbModel): Promise<string> => {
+	const result = await PostModelClass.create(post);
 
-	return result.insertedId.toString();
+	return result._id.toString();
 };
 
 const getAll = async ({
@@ -17,51 +18,45 @@ const getAll = async ({
 }: {
 	limit: number;
 	skip: number;
-	sortDirection: SortDirection;
+	sortDirection: SortOrder;
 	sortBy: string;
 	searchNameTerm: string | null;
 }): Promise<{
 	totalCount: number;
-	items: Array<WithId<PostModel>>;
+	items: Array<WithId<PostDbModel>>;
 }> => {
-	const filter = searchNameTerm ? { name: { $regex: searchNameTerm, $options: 'i' } } : {};
-	const sortOption: [string, SortDirection][] = [[sortBy, sortDirection]];
+	const filter = searchNameTerm ? { title: { $regex: searchNameTerm, $options: 'i' } } : {};
 
-	const items = await postCollection
-		.find(filter)
-		.sort(sortOption)
+	const items = await PostModelClass.find(filter)
+		.sort({ [sortBy]: sortDirection })
 		.skip(skip)
 		.limit(limit)
-		.toArray();
-	const totalCount = await postCollection.countDocuments(filter);
+		.lean();
+
+	const totalCount = await PostModelClass.countDocuments(filter);
 
 	return { items, totalCount };
 };
 
-const findById = async (id: string): Promise<WithId<PostModel> | null> => {
-	return postCollection.findOne({ _id: new ObjectId(id) });
+const findById = async (id: string): Promise<WithId<PostDbModel> | null> => {
+	return PostModelClass.findById(id).lean();
 };
 
-const update = async (id: string, updatedPost: PostModel): Promise<boolean> => {
-	const { title, shortDescription, content, blogId } = updatedPost;
-	const result = await postCollection.updateOne(
-		{ _id: new ObjectId(id) },
-		{ $set: { title, shortDescription, content, blogId } },
-	);
-
-	return !!result.matchedCount;
+const update = async (id: string, updatedPost: Partial<PostDbModel>): Promise<boolean> => {
+	const result = await PostModelClass.updateOne({ _id: id }, { $set: updatedPost });
+	return result.matchedCount > 0;
 };
 
 const remove = async (id: string): Promise<boolean> => {
-	const result = await postCollection.deleteOne({ _id: new ObjectId(id) });
+	const result = await PostModelClass.deleteOne({ _id: id });
 
-	return !!result.deletedCount;
+	return result.deletedCount > 0;
 };
 
 const createCommentForPost = async (comment: CommentForPostDbModel): Promise<string> => {
-	const result = await commentsCollection.insertOne({ ...comment });
+	const result = await CommentModelClass.create(comment);
 
-	return result.insertedId.toString();
+	return result._id.toString();
 };
 
 const getAllCommentsForPost = async ({
@@ -73,22 +68,20 @@ const getAllCommentsForPost = async ({
 }: {
 	limit: number;
 	skip: number;
-	sortDirection: SortDirection;
+	sortDirection: SortOrder;
 	sortBy: string;
 	postId: string;
 }): Promise<{
 	totalCount: number;
 	items: Array<WithId<CommentForPostDbModel>>;
 }> => {
-	const sortOption: [string, SortDirection][] = [[sortBy, sortDirection]];
-
-	const items = await commentsCollection
-		.find({ postId })
-		.sort(sortOption)
+	const items = await CommentModelClass.find({ postId })
+		.sort({ [sortBy]: sortDirection })
 		.skip(skip)
 		.limit(limit)
-		.toArray();
-	const totalCount = await commentsCollection.countDocuments({ postId });
+		.lean();
+
+	const totalCount = await CommentModelClass.countDocuments({ postId });
 
 	return { items, totalCount };
 };

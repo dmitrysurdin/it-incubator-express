@@ -1,10 +1,10 @@
-import { apiLogsCollection } from '../../db/mongo-db';
 import { ApiLogsDbModel } from './apiLogs.types';
+import { ApiLogsModelClass } from '../../db/models';
 
 const addApiLog = async (logEntry: ApiLogsDbModel): Promise<string> => {
-	const result = await apiLogsCollection.insertOne(logEntry);
+	const result = await ApiLogsModelClass.create(logEntry);
 
-	return result.insertedId.toString();
+	return result._id.toString();
 };
 
 const getApiLogsWithinTheDate = async (
@@ -12,7 +12,7 @@ const getApiLogsWithinTheDate = async (
 	url: string,
 	limitingDate: Date,
 ): Promise<number> => {
-	return await apiLogsCollection.countDocuments({
+	return ApiLogsModelClass.countDocuments({
 		ip,
 		url,
 		date: { $gte: limitingDate },

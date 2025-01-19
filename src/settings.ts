@@ -6,7 +6,7 @@ export const SETTINGS = {
 	PORT: process.env.PORT || 3003,
 	LOGIN: process.env.LOGIN,
 	PASSWORD: process.env.PASSWORD,
-	MONGO_URL: process.env.MONGO_URL || 'mongodb://0.0.0.0:27017',
+	MONGO_URL: process.env.MONGO_URL || 'mongodb://0.0.0.0:27017' + '/' + 'database',
 	EMAIL: process.env.EMAIL,
 	EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
 	DB_NAME: 'database',

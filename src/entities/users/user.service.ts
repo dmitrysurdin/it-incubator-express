@@ -3,6 +3,7 @@ import { userRepositories } from './user.repository';
 import bcrypt from 'bcrypt';
 import { SortDirection } from 'mongodb';
 import { mapUsersFromDb } from './user.helpers';
+import { SortOrder } from 'mongoose';
 
 const create = async (user: UserInputModel): Promise<UserClientModel> => {
 	const existingUserByLogin = await userRepositories.findByLogin(user.login);
@@ -66,7 +67,7 @@ const getAll = async ({
 		limit,
 		validatedPageNumber,
 		skip: (validatedPageNumber - 1) * limit,
-		sortDirection: (sortDirection as SortDirection) ?? 'desc',
+		sortDirection: (sortDirection as SortOrder) ?? 'desc',
 		sortBy: sortBy ?? 'createdAt',
 		searchLoginTerm: searchLoginTerm ?? null,
 		searchEmailTerm: searchEmailTerm ?? null,

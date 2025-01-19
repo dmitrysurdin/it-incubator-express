@@ -1,6 +1,6 @@
-import { PostModel } from '../../src/entities/posts/post.types';
+import { PostDbModel } from '../../src/entities/posts/post.types';
 
-export const postMock: PostModel = {
+export const postMock: PostDbModel = {
 	title: 'title',
 	shortDescription: 'shortDescription',
 	content: 'content',

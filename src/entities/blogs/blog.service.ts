@@ -1,13 +1,13 @@
-import { BlogClientModel, BlogModel } from './blog.types';
+import { BlogClientModel, BlogDbModel } from './blog.types';
 import { blogRepositories } from './blog.repository';
 import { mapBlogFromDb, mapBlogsFromDb } from './blog.helpers';
-import { SortDirection } from 'mongodb';
-import { PostClientModel, PostModel } from '../posts/post.types';
+import { PostClientModel, PostDbModel } from '../posts/post.types';
 import { postRepositories } from '../posts/post.repository';
 import { mapPostsFromDb } from '../posts/post.helpers';
+import { SortOrder } from 'mongoose';
 
-const create = async (blog: BlogModel): Promise<BlogClientModel> => {
-	const newBlog: BlogModel = {
+const create = async (blog: BlogDbModel): Promise<BlogClientModel> => {
+	const newBlog: BlogDbModel = {
 		...blog,
 		isMembership: false,
 		createdAt: new Date().toISOString(),
@@ -19,7 +19,7 @@ const create = async (blog: BlogModel): Promise<BlogClientModel> => {
 
 const createPostForBlog = async (
 	blogId: string,
-	post: PostModel,
+	post: PostDbModel,
 ): Promise<PostClientModel | null> => {
 	const blog = await blogRepositories.findById(blogId);
 
@@ -27,7 +27,7 @@ const createPostForBlog = async (
 		return null;
 	}
 
-	const newPost: PostModel = {
+	const newPost: PostDbModel = {
 		...post,
 		blogId,
 		blogName: blog?.name,
@@ -67,7 +67,7 @@ const getAllPostsByBlogId = async ({
 		validatedPageNumber,
 		blogId,
 		skip: (validatedPageNumber - 1) * limit,
-		sortDirection: (sortDirection as SortDirection) ?? 'desc',
+		sortDirection: (sortDirection as SortOrder) ?? 'desc',
 		sortBy: sortBy ?? 'createdAt',
 		searchNameTerm: searchNameTerm ?? null,
 	};
@@ -112,7 +112,7 @@ const getAll = async ({
 		limit,
 		validatedPageNumber,
 		skip: (validatedPageNumber - 1) * limit,
-		sortDirection: (sortDirection as SortDirection) ?? 'desc',
+		sortDirection: (sortDirection as SortOrder) ?? 'desc',
 		sortBy: sortBy ?? 'createdAt',
 		searchNameTerm: searchNameTerm ?? null,
 	};
@@ -141,7 +141,7 @@ const findById = async (id: string): Promise<BlogClientModel | null> => {
 	return mapBlogFromDb(blogFromDb);
 };
 
-const update = async (id: string, updatedBlog: BlogModel): Promise<boolean> => {
+const update = async (id: string, updatedBlog: BlogDbModel): Promise<boolean> => {
 	return await blogRepositories.update(id, updatedBlog);
 };
 

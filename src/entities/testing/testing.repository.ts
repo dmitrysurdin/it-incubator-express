@@ -1,23 +1,23 @@
 import {
-	apiLogsCollection,
-	blogCollection,
-	commentsCollection,
-	postCollection,
-	registrationUserCollection,
-	revokedRefreshTokensCollection,
-	userCollection,
-	userSessionsCollection,
-} from '../../db/mongo-db';
+	ApiLogsModelClass,
+	BlogModelClass,
+	CommentModelClass,
+	DeviceSessionModelClass,
+	PostModelClass,
+	RegistrationUserModelClass,
+	RevokedRefreshTokenModelClass,
+	UserModelClass,
+} from '../../db/models';
 
 const clearDb = async (): Promise<void> => {
-	await postCollection.deleteMany({});
-	await blogCollection.deleteMany({});
-	await userCollection.deleteMany({});
-	await commentsCollection.deleteMany({});
-	await registrationUserCollection.deleteMany({});
-	await userSessionsCollection.deleteMany({});
-	await apiLogsCollection.deleteMany({});
-	await revokedRefreshTokensCollection.deleteMany({});
+	await BlogModelClass.deleteMany({});
+	await PostModelClass.deleteMany({});
+	await CommentModelClass.deleteMany({});
+	await UserModelClass.deleteMany({});
+	await RegistrationUserModelClass.deleteMany({});
+	await RevokedRefreshTokenModelClass.deleteMany({});
+	await DeviceSessionModelClass.deleteMany({});
+	await ApiLogsModelClass.deleteMany({});
 };
 
 export const testingRepositories = {

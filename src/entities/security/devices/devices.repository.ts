@@ -1,49 +1,49 @@
-import { userSessionsCollection } from '../../../db/mongo-db';
 import { DeviceSessionDbModel } from './devices.types';
 import { WithId } from 'mongodb';
+import { DeviceSessionModelClass } from '../../../db/models';
 
 const getAllActiveDevices = async (
 	userId: string,
 ): Promise<Array<WithId<DeviceSessionDbModel>>> => {
-	return userSessionsCollection.find({ userId }).toArray();
+	return DeviceSessionModelClass.find({ userId }).lean();
 };
 
 const addNewDeviceSession = async (session: DeviceSessionDbModel): Promise<string> => {
-	const result = await userSessionsCollection.insertOne({ ...session });
+	const result = await DeviceSessionModelClass.create(session);
 
-	return result.insertedId.toString();
+	return result._id.toString();
 };
 
 const deleteAllActiveDevicesExceptCurrent = async (deviceId: string): Promise<boolean> => {
-	const result = await userSessionsCollection.deleteMany({
+	const result = await DeviceSessionModelClass.deleteMany({
 		deviceId: { $ne: deviceId },
 	});
 
-	return !!result.deletedCount;
+	return result.deletedCount > 0;
 };
 
 const deleteDeviceSession = async (deviceId: string): Promise<boolean> => {
-	const result = await userSessionsCollection.deleteOne({ deviceId });
+	const result = await DeviceSessionModelClass.deleteOne({ deviceId });
 
-	return !!result.deletedCount;
+	return result.deletedCount > 0;
 };
 
 const findDeviceSessionByDeviceId = async (
 	deviceId: string,
 ): Promise<DeviceSessionDbModel | null> => {
-	return await userSessionsCollection.findOne({ deviceId });
+	return DeviceSessionModelClass.findOne({ deviceId }).lean();
 };
 
 const updateLastActiveDateByDeviceId = async (
 	newActiveDate: string,
 	deviceId: string,
 ): Promise<boolean> => {
-	const result = await userSessionsCollection.updateOne(
+	const result = await DeviceSessionModelClass.updateOne(
 		{ deviceId },
 		{ $set: { lastActiveDate: newActiveDate } },
 	);
 
-	return !!result.matchedCount;
+	return result.matchedCount > 0;
 };
 
 export const devicesRepositories = {

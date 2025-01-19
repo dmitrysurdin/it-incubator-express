@@ -1,4 +1,4 @@
-export interface PostModel {
+export interface PostDbModel {
 	title: string;
 	shortDescription: string;
 	content: string;
@@ -9,7 +9,7 @@ export interface PostModel {
 
 export type PostClientModel = {
 	id: string;
-} & PostModel;
+} & PostDbModel;
 
 interface CommentatorInfo {
 	userId: string;

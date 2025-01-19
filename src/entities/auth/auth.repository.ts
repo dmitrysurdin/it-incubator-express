@@ -1,78 +1,81 @@
-import {
-	registrationUserCollection,
-	revokedRefreshTokensCollection,
-	userCollection,
-} from '../../db/mongo-db';
 import { AuthUserDbModel, RegistrationUserDbModel } from './auth.types';
-import { ObjectId, WithId } from 'mongodb';
+import {
+	RegistrationUserModelClass,
+	RevokedRefreshTokenModelClass,
+	UserModelClass,
+} from '../../db/models';
+import { WithId } from 'mongodb';
 
 const findUserByLoginOrEmail = async (
 	loginOrEmail: string,
 ): Promise<WithId<AuthUserDbModel> | null> => {
-	return userCollection.findOne({
+	return UserModelClass.findOne({
 		$or: [{ login: loginOrEmail }, { email: loginOrEmail }],
-	});
+	}).lean();
 };
 
 const findUserById = async (id: string): Promise<WithId<AuthUserDbModel> | null> => {
-	return userCollection.findOne({ _id: new ObjectId(id) });
+	return UserModelClass.findById(id).lean();
 };
 
 const findRegistrationUserByEmail = async (
 	email: string,
 ): Promise<WithId<RegistrationUserDbModel> | null> => {
-	return registrationUserCollection.findOne({ 'accountData.email': email });
+	return RegistrationUserModelClass.findOne({ 'accountData.email': email }).lean();
 };
 
 const findRegistrationUserByLogin = async (
 	login: string,
 ): Promise<WithId<RegistrationUserDbModel> | null> => {
-	return registrationUserCollection.findOne({ 'accountData.login': login });
+	return RegistrationUserModelClass.findOne({ 'accountData.login': login }).lean();
 };
 
 const findRegistrationUserByCode = async (
 	code: string,
 ): Promise<WithId<RegistrationUserDbModel> | null> => {
-	return registrationUserCollection.findOne({ 'emailConfirmation.confirmationCode': code });
+	return RegistrationUserModelClass.findOne({ 'emailConfirmation.confirmationCode': code }).lean();
 };
 
 const createUser = async (user: RegistrationUserDbModel): Promise<string> => {
-	const result = await registrationUserCollection.insertOne({ ...user });
+	const result = await RegistrationUserModelClass.create(user);
 
-	return result.insertedId.toString();
+	return result._id.toString();
 };
 
 const removeRegistrationUserByEmail = async (email: string): Promise<boolean> => {
-	const result = await registrationUserCollection.deleteOne({
+	const result = await RegistrationUserModelClass.deleteOne({
 		'accountData.email': email,
 	});
 
-	return !!result.deletedCount;
+	return result.deletedCount > 0;
 };
 
 const confirmRegistrationById = async (id: string): Promise<boolean> => {
-	const result = await registrationUserCollection.updateOne(
-		{ _id: new ObjectId(id) },
+	const result = await RegistrationUserModelClass.updateOne(
+		{ _id: id },
 		{ $set: { 'emailConfirmation.isConfirmed': true } },
 	);
-	return !!result.matchedCount;
+
+	return result.matchedCount > 0;
 };
 
 const updateConfirmationCodeById = async (id: string, code: string): Promise<boolean> => {
-	const result = await registrationUserCollection.updateOne(
-		{ _id: new ObjectId(id) },
+	const result = await RegistrationUserModelClass.updateOne(
+		{ _id: id },
 		{ $set: { 'emailConfirmation.confirmationCode': code } },
 	);
-	return !!result.matchedCount;
+
+	return result.matchedCount > 0;
 };
 
 const isTokenRevoked = async (token: string): Promise<boolean> => {
-	const revokedToken = await revokedRefreshTokensCollection.findOne({ token });
+	const revokedToken = await RevokedRefreshTokenModelClass.findOne({ token }).lean();
+
 	return !!revokedToken;
 };
 
 const revokeRefreshToken = async (userId: string, token: string): Promise<void> => {
-	await revokedRefreshTokensCollection.insertOne({ userId, token });
+	await RevokedRefreshTokenModelClass.create({ userId, token });
 };
 
 export const authRepositories = {
