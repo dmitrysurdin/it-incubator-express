@@ -8,3 +8,8 @@ interface sendConfirmationEmailInput {
 	confirmationCode: string;
 	email: string;
 }
+
+interface sendRecoveryPasswordInput {
+	email: string;
+	recoveryCode: string;
+}

@@ -18,6 +18,7 @@ export const SETTINGS = {
 	REVOKED_REFRESH_TOKEN_COLLECTION_NAME: 'revokedRefreshTokensCollection',
 	DEVICE_SESSIONS_COLLECTION_NAME: 'deviceSessions',
 	API_LOGS_COLLECTION_NAME: 'apiLogs',
+	PASSWORD_RECOVERY_COLLECTION_NAME: 'passwordRecovery',
 	PATH: {
 		BLOGS: '/blogs',
 		POSTS: '/posts',

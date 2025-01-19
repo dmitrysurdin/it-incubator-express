@@ -226,6 +226,33 @@ const invalidateRefreshToken = async (userId: string, token: string): Promise<vo
 	await authRepositories.revokeRefreshToken(userId, token);
 };
 
+const sendPasswordRecovery = async (email: string): Promise<void> => {
+	await emailService.sendPasswordRecovery(email);
+};
+
+const confirmNewPassword = async (newPassword: string, recoveryCode: string): Promise<boolean> => {
+	const recoveryRecord = await authRepositories.findPasswordRecoveryByCode(recoveryCode);
+
+	if (!recoveryRecord || recoveryRecord.expirationDate < new Date()) {
+		throw {
+			errorsMessages: [{ field: 'recoveryCode', message: 'Invalid or expired recovery code' }],
+		};
+	}
+
+	const passwordSalt = await bcrypt.genSalt(10);
+	const passwordHash = await bcrypt.hash(newPassword, passwordSalt);
+
+	const isUpdated = await userRepositories.updatePasswordById(
+		recoveryRecord.userId,
+		passwordHash,
+		passwordSalt,
+	);
+
+	await authRepositories.deletePasswordRecoveryRecordByCode(recoveryCode);
+
+	return isUpdated;
+};
+
 export const authServices = {
 	login,
 	createJWT,
@@ -237,4 +264,6 @@ export const authServices = {
 	register,
 	resendConfirmationEmail,
 	confirmRegistration,
+	sendPasswordRecovery,
+	confirmNewPassword,
 };

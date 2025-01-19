@@ -1,5 +1,6 @@
-import { AuthUserDbModel, RegistrationUserDbModel } from './auth.types';
+import { AuthUserDbModel, PasswordRecovery, RegistrationUserDbModel } from './auth.types';
 import {
+	PasswordRecoveryModel,
 	RegistrationUserModelClass,
 	RevokedRefreshTokenModelClass,
 	UserModelClass,
@@ -78,6 +79,24 @@ const revokeRefreshToken = async (userId: string, token: string): Promise<void> 
 	await RevokedRefreshTokenModelClass.create({ userId, token });
 };
 
+const createPasswordRecoveryRecord = async (
+	userId: string,
+	recoveryCode: string,
+	expirationDate: Date,
+): Promise<void> => {
+	await PasswordRecoveryModel.create({ userId, recoveryCode, expirationDate });
+};
+
+const findPasswordRecoveryByCode = async (
+	recoveryCode: string,
+): Promise<PasswordRecovery | null> => {
+	return PasswordRecoveryModel.findOne({ recoveryCode }).exec();
+};
+
+const deletePasswordRecoveryRecordByCode = async (recoveryCode: string): Promise<void> => {
+	await PasswordRecoveryModel.deleteOne({ recoveryCode });
+};
+
 export const authRepositories = {
 	findUserByLoginOrEmail,
 	findUserById,
@@ -90,4 +109,7 @@ export const authRepositories = {
 	updateConfirmationCodeById,
 	isTokenRevoked,
 	revokeRefreshToken,
+	createPasswordRecoveryRecord,
+	findPasswordRecoveryByCode,
+	deletePasswordRecoveryRecordByCode,
 };

@@ -178,6 +178,43 @@ const confirmRegistration = async (req: Request, res: Response): Promise<void> =
 	}
 };
 
+const sendPasswordRecovery = async (req: Request, res: Response): Promise<void> => {
+	try {
+		await authServices.sendPasswordRecovery(req.body.email);
+
+		res.sendStatus(204);
+
+		return;
+	} catch (error) {
+		res.status(400).json(error);
+
+		return;
+	}
+};
+
+const confirmNewPassword = async (req: Request, res: Response): Promise<void> => {
+	try {
+		const isUpdated = await authServices.confirmNewPassword(
+			req.body.newPassword,
+			req.body.recoveryCode,
+		);
+
+		if (!isUpdated) {
+			res.sendStatus(500);
+
+			return;
+		}
+
+		res.sendStatus(204);
+
+		return;
+	} catch (error) {
+		res.status(400).json(error);
+
+		return;
+	}
+};
+
 export const authControllers = {
 	login,
 	logout,
@@ -186,4 +223,6 @@ export const authControllers = {
 	register,
 	resendConfirmationEmail,
 	confirmRegistration,
+	sendPasswordRecovery,
+	confirmNewPassword,
 };

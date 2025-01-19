@@ -49,3 +49,9 @@ export interface RevokedRefreshTokenDbModel {
 	userId: string;
 	token: string;
 }
+
+export interface PasswordRecovery extends Document {
+	recoveryCode: string;
+	userId: string;
+	expirationDate: Date;
+}

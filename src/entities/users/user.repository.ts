@@ -64,10 +64,29 @@ const findByEmail = async (email: string): Promise<UserDbModel | null> => {
 	return UserModelClass.findOne({ email }).lean();
 };
 
+const updatePasswordById = async (
+	userId: string,
+	passwordHash: string,
+	passwordSalt: string,
+): Promise<boolean> => {
+	const result = await UserModelClass.updateOne(
+		{ _id: userId },
+		{
+			$set: {
+				passwordHash,
+				passwordSalt,
+			},
+		},
+	);
+
+	return result.matchedCount > 0;
+};
+
 export const userRepositories = {
 	create,
 	getAll,
 	remove,
 	findByLogin,
 	findByEmail,
+	updatePasswordById,
 };
