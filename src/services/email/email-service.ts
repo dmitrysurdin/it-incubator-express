@@ -35,18 +35,12 @@ export const emailService = {
 	sendPasswordRecovery: async (email: string): Promise<SentMessageInfo> => {
 		const user = await authRepositories.findUserByLoginOrEmail(email);
 
-		if (!user) {
-			throw {
-				errorsMessages: [{ message: 'user is not confirmed or not exited', field: 'email' }],
-			};
-		}
-
 		const recoveryCode = uuidv4();
 
 		const expirationDate = add(new Date(), { hours: 1 });
 
 		await authRepositories.createPasswordRecoveryRecord(
-			user._id.toString(),
+			user?._id.toString() ?? '',
 			recoveryCode,
 			expirationDate,
 		);
