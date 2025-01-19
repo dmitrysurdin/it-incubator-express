@@ -3,6 +3,7 @@ import {
 	BlogModelClass,
 	CommentModelClass,
 	DeviceSessionModelClass,
+	PasswordRecoveryModel,
 	PostModelClass,
 	RegistrationUserModelClass,
 	RevokedRefreshTokenModelClass,
@@ -18,6 +19,7 @@ const clearDb = async (): Promise<void> => {
 	await RevokedRefreshTokenModelClass.deleteMany({});
 	await DeviceSessionModelClass.deleteMany({});
 	await ApiLogsModelClass.deleteMany({});
+	await PasswordRecoveryModel.deleteMany({});
 };
 
 export const testingRepositories = {

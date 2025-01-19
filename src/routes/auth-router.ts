@@ -1,9 +1,13 @@
 import { Router } from 'express';
 import { inputCheckErrorsMiddleware } from '../middlewares/inputCheckErrorsMiddleware';
-import { authInputValidators } from '../entities/auth/middlewares';
+import {
+	authInputValidators,
+	emailValidator,
+	recoveryPasswordInputValidators,
+} from '../entities/auth/middlewares';
 import { authControllers } from '../entities/auth/auth.controller';
 import { bearerAuthMiddleware, refreshTokenAuthMiddleware } from '../middlewares/authMiddleware';
-import { codeValidator, emailValidator, userInputValidators } from '../entities/users/middlewares';
+import { codeValidator, userInputValidators } from '../entities/users/middlewares';
 import { rateLimiterMiddleware } from '../middlewares/rateLimiterMiddleware';
 
 export const authRouter = Router();
@@ -37,5 +41,19 @@ authRouter.post(
 	[codeValidator],
 	inputCheckErrorsMiddleware,
 	authControllers.confirmRegistration,
+);
+authRouter.post(
+	'/password-recovery',
+	rateLimiterMiddleware,
+	[emailValidator],
+	inputCheckErrorsMiddleware,
+	authControllers.sendPasswordRecovery,
+);
+authRouter.post(
+	'/new-password',
+	rateLimiterMiddleware,
+	recoveryPasswordInputValidators,
+	inputCheckErrorsMiddleware,
+	authControllers.confirmNewPassword,
 );
 authRouter.get('/me', bearerAuthMiddleware, authControllers.me);

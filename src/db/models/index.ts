@@ -6,3 +6,4 @@ export { RegistrationUserModelClass } from './registrationUser.model';
 export { RevokedRefreshTokenModelClass } from './revokedRefreshToken.model';
 export { DeviceSessionModelClass } from './deviceSession.model';
 export { ApiLogsModelClass } from './apiLog.model';
+export { PasswordRecoveryModel } from './passwordRecovery.model';
