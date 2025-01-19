@@ -239,6 +239,12 @@ const confirmNewPassword = async (newPassword: string, recoveryCode: string): Pr
 		};
 	}
 
+	if (!recoveryRecord?.userId) {
+		throw {
+			errorsMessages: [{ field: 'user', message: 'User does not exist' }],
+		};
+	}
+
 	const passwordSalt = await bcrypt.genSalt(10);
 	const passwordHash = await bcrypt.hash(newPassword, passwordSalt);
 

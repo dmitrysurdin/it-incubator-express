@@ -3,7 +3,7 @@ import { SETTINGS } from '../../settings';
 import { PasswordRecovery } from '../../entities/auth/auth.types';
 
 const PasswordRecoverySchema = new Schema<PasswordRecovery>({
-	userId: { type: String, required: true },
+	userId: { type: String, required: false },
 	recoveryCode: { type: String, required: true, unique: true },
 	expirationDate: { type: Date, required: true },
 });
