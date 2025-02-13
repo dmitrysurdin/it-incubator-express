@@ -49,6 +49,15 @@ export const bearerAuthMiddleware = (req: Request, res: Response, next: NextFunc
 	}
 };
 
+export const softBearerAuthMiddleware = (req: Request, res: Response, next: NextFunction): void => {
+	const authHeader = req.headers.authorization;
+
+	const token = authHeader?.split(' ')[1];
+
+	req.userId = token ? authServices.getUserIdByToken(token) : null;
+	next();
+};
+
 export const refreshTokenAuthMiddleware = async (
 	req: Request,
 	res: Response,

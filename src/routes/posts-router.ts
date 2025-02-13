@@ -2,7 +2,11 @@ import { Router } from 'express';
 import { postControllers } from '../entities/posts/post.controller';
 import { commentInputValidators, postInputValidators } from '../entities/posts/middlewares';
 import { inputCheckErrorsMiddleware } from '../middlewares/inputCheckErrorsMiddleware';
-import { basicAuthMiddleware, bearerAuthMiddleware } from '../middlewares/authMiddleware';
+import {
+	basicAuthMiddleware,
+	bearerAuthMiddleware,
+	softBearerAuthMiddleware,
+} from '../middlewares/authMiddleware';
 import {
 	mongoIdParamsValidator,
 	mongoPostIdParamsValidator,
@@ -56,6 +60,7 @@ postsRouter.post(
 );
 postsRouter.get(
 	'/:postId/comments',
+	softBearerAuthMiddleware,
 	mongoPostIdParamsValidator,
 	[...paginationQueryValidator],
 	postControllers.getAllCommentsForPost,

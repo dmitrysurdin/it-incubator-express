@@ -3,7 +3,6 @@ import { CommentClientModel } from './comment.types';
 import { commentRepositories } from './comment.repository';
 import { LikeStatus } from '../../types/types';
 import { CommentLikeModelClass } from '../../db/models/commentLikeModelClass';
-import { ObjectId } from 'mongodb';
 
 const findById = async (id: string, userId?: string): Promise<CommentClientModel | null> => {
 	const commentFromDb = await commentRepositories.findById(id);

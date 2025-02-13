@@ -1,12 +1,9 @@
 import { Request, Response } from 'express';
 import { commentServices } from './comment.service';
 import { LikeStatus } from '../../types/types';
-import { authServices } from '../auth/auth.service';
 
 export const findById = async (req: Request, res: Response): Promise<void> => {
-	const refreshToken = req.cookies.refreshToken;
-	const refreshTokenPayload = await authServices.getTokenPayload(refreshToken);
-	const userId = refreshTokenPayload?.userId;
+	const userId = req?.userId ?? '';
 
 	const foundComment = await commentServices.findById(req.params.id, userId);
 
