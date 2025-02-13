@@ -2,6 +2,7 @@ import { mapCommentFromDb } from './comment.helpers';
 import { CommentClientModel, CommentInputModel } from './comment.types';
 import { commentRepositories } from './comment.repository';
 import { LikeStatus } from '../../types/types';
+import { CommentLikeModelClass } from '../../db/models/commentLikeModelClass';
 
 const findById = async (id: string, userId?: string): Promise<CommentClientModel | null> => {
 	const commentFromDb = await commentRepositories.findById(id);
@@ -14,7 +15,8 @@ const findById = async (id: string, userId?: string): Promise<CommentClientModel
 	return {
 		...mapCommentFromDb(commentFromDb),
 		likesInfo: {
-			...commentFromDb.likesInfo,
+			likesCount: commentFromDb.likesInfo.likesCount,
+			dislikesCount: commentFromDb.likesInfo.dislikesCount,
 			myStatus,
 		},
 	};
@@ -36,15 +38,30 @@ const updateLikeStatus = async (
 	const comment = await commentRepositories.findById(commentId);
 	if (!comment) return false;
 
-	const myStatus = await commentRepositories.getUserLikeStatus(commentId, userId);
+	const existingLike = await CommentLikeModelClass.findOne({ commentId, userId });
 
-	if (myStatus === newStatus) return true;
+	if (existingLike && existingLike.status === newStatus) {
+		return true;
+	}
 
 	let updatedLikes = comment.likesInfo.likesCount;
 	let updatedDislikes = comment.likesInfo.dislikesCount;
 
-	if (myStatus === LikeStatus.Like) updatedLikes -= 1;
-	if (myStatus === LikeStatus.Dislike) updatedDislikes -= 1;
+	if (existingLike) {
+		if (existingLike.status === LikeStatus.Like) updatedLikes -= 1;
+		if (existingLike.status === LikeStatus.Dislike) updatedDislikes -= 1;
+
+		if (newStatus === LikeStatus.None) {
+			await CommentLikeModelClass.deleteOne({ commentId, userId });
+		} else {
+			existingLike.status = newStatus;
+			await existingLike.save();
+		}
+	} else {
+		if (newStatus !== LikeStatus.None) {
+			await new CommentLikeModelClass({ commentId, userId, status: newStatus }).save();
+		}
+	}
 
 	if (newStatus === LikeStatus.Like) updatedLikes += 1;
 	if (newStatus === LikeStatus.Dislike) updatedDislikes += 1;
