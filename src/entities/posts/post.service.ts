@@ -7,9 +7,9 @@ import {
 import { blogRepositories } from '../blogs/blog.repository';
 import { postRepositories } from './post.repository';
 import { mapCommentsFromDb, mapPostFromDb, mapPostsFromDb } from './post.helpers';
-import { SortDirection } from 'mongodb';
 import { authRepositories } from '../auth/auth.repository';
 import { SortOrder } from 'mongoose';
+import { LikeStatus } from '../../types/types';
 
 const create = async (post: PostDbModel): Promise<PostClientModel | null> => {
 	const blog = await blogRepositories.findById(post.blogId);
@@ -107,6 +107,11 @@ const createCommentForPost = async (
 			userId,
 			userLogin: user!.login,
 		},
+		likesInfo: {
+			likesCount: 0,
+			dislikesCount: 0,
+			myStatus: LikeStatus.None,
+		},
 	};
 
 	const createdCommentId = await postRepositories.createCommentForPost(newComment);
@@ -116,6 +121,7 @@ const createCommentForPost = async (
 		commentatorInfo: { ...newComment.commentatorInfo },
 		createdAt: newComment.createdAt,
 		id: createdCommentId,
+		likesInfo: { ...newComment.likesInfo },
 	};
 };
 

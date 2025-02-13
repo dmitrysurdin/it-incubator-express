@@ -1,3 +1,5 @@
+import { LikeStatus } from '../../types/types';
+
 export interface PostDbModel {
 	title: string;
 	shortDescription: string;
@@ -21,6 +23,11 @@ export interface CommentForPostDbModel {
 	content: string;
 	commentatorInfo: CommentatorInfo;
 	createdAt: string;
+	likesInfo: {
+		likesCount: number;
+		dislikesCount: number;
+		myStatus: LikeStatus;
+	};
 }
 
 export interface CommentForPostClientModel {
@@ -28,4 +35,9 @@ export interface CommentForPostClientModel {
 	content: string;
 	commentatorInfo: CommentatorInfo;
 	createdAt: string;
+	likesInfo: {
+		likesCount: number;
+		dislikesCount: number;
+		myStatus: LikeStatus;
+	};
 }

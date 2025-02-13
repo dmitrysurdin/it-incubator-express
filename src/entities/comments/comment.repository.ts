@@ -1,6 +1,7 @@
 import { CommentClientModel, CommentDbModel } from './comment.types';
 import { CommentModelClass } from '../../db/models';
 import { ObjectId, WithId } from 'mongodb';
+import { LikeStatus } from '../../types/types';
 
 const findById = async (id: string): Promise<WithId<CommentDbModel> | null> => {
 	return CommentModelClass.findById(id).lean();
@@ -21,8 +22,26 @@ const remove = async (id: string): Promise<boolean> => {
 	return result.deletedCount > 0;
 };
 
+const updateLikeStatus = async (
+	commentId: string,
+	likesInfo: { likesCount: number; dislikesCount: number; myStatus: LikeStatus },
+): Promise<boolean> => {
+	const result = await CommentModelClass.updateOne(
+		{ _id: new ObjectId(commentId) },
+		{
+			$set: {
+				'likesInfo.likesCount': likesInfo.likesCount,
+				'likesInfo.dislikesCount': likesInfo.dislikesCount,
+				'likesInfo.myStatus': likesInfo.myStatus,
+			},
+		},
+	);
+	return result.matchedCount > 0;
+};
+
 export const commentRepositories = {
 	findById,
 	update,
+	updateLikeStatus,
 	remove,
 };

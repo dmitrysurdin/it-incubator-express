@@ -21,8 +21,8 @@ const login = async (req: Request, res: Response): Promise<void> => {
 		const ip = req.ip ?? '';
 		const deviceId = uuidv4();
 
-		const accessToken = authServices.createJWT(user!._id.toString(), '10s');
-		const refreshToken = authServices.createJWT(user!._id.toString(), '20s', deviceId);
+		const accessToken = authServices.createJWT(user!._id.toString(), '10m');
+		const refreshToken = authServices.createJWT(user!._id.toString(), '30m', deviceId);
 
 		const session: DeviceSessionDbModel = {
 			ip,
@@ -66,8 +66,8 @@ const refreshToken = async (req: Request, res: Response): Promise<void> => {
 
 		const newActiveDate = new Date().toISOString();
 
-		const newAccessToken = authServices.createJWT(userId, '10s');
-		const newRefreshToken = authServices.createJWT(userId, '20s', deviceId);
+		const newAccessToken = authServices.createJWT(userId, '10m');
+		const newRefreshToken = authServices.createJWT(userId, '30m', deviceId);
 
 		await devicesRepositories.updateLastActiveDateByDeviceId(newActiveDate, deviceId);
 

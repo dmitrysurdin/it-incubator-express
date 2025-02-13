@@ -16,6 +16,12 @@ commentsRouter.put(
 	inputCheckErrorsMiddleware,
 	commentControllers.update,
 );
+commentsRouter.put(
+	'/:commentId/like-status',
+	bearerAuthMiddleware,
+	mongoCommentIdParamsValidator,
+	commentControllers.updateLikeStatus,
+);
 commentsRouter.delete(
 	'/:commentId',
 	bearerAuthMiddleware,

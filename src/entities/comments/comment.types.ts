@@ -1,3 +1,5 @@
+import { LikeStatus } from '../../types/types';
+
 interface CommentatorInfo {
 	userId: string;
 	userLogin: string;
@@ -8,6 +10,11 @@ export interface CommentDbModel {
 	content: string;
 	commentatorInfo: CommentatorInfo;
 	createdAt: string;
+	likesInfo: {
+		likesCount: number;
+		dislikesCount: number;
+		myStatus: LikeStatus;
+	};
 }
 
 export interface CommentClientModel {
@@ -15,6 +22,11 @@ export interface CommentClientModel {
 	content: string;
 	commentatorInfo: CommentatorInfo;
 	createdAt: string;
+	likesInfo?: {
+		likesCount: number;
+		dislikesCount: number;
+		myStatus: LikeStatus;
+	};
 }
 
 export interface CommentInputModel {

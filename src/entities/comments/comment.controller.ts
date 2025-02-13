@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { commentServices } from './comment.service';
+import { LikeStatus } from '../../types/types';
 
 export const findById = async (req: Request, res: Response): Promise<void> => {
 	const foundComment = await commentServices.findById(req.params.id);
@@ -74,8 +75,34 @@ const remove = async (req: Request, res: Response): Promise<void> => {
 	res.sendStatus(204);
 };
 
+const updateLikeStatus = async (req: Request, res: Response): Promise<void> => {
+	const { commentId } = req.params;
+	const { likeStatus } = req.body;
+
+	if (!Object.values(LikeStatus).includes(likeStatus)) {
+		res.sendStatus(400);
+		return;
+	}
+
+	const comment = await commentServices.findById(commentId);
+	if (!comment) {
+		res.sendStatus(404);
+		return;
+	}
+
+	const isUpdated = await commentServices.updateLikeStatus(commentId, likeStatus);
+
+	if (!isUpdated) {
+		res.sendStatus(400);
+		return;
+	}
+
+	res.sendStatus(204);
+};
+
 export const commentControllers = {
 	findById,
 	update,
 	remove,
+	updateLikeStatus,
 };

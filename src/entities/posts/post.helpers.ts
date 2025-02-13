@@ -33,6 +33,11 @@ export const mapCommentFromDb = (
 			userId: commentDb.commentatorInfo.userId,
 			userLogin: commentDb.commentatorInfo.userLogin,
 		},
+		likesInfo: {
+			likesCount: commentDb.likesInfo.likesCount,
+			dislikesCount: commentDb.likesInfo.dislikesCount,
+			myStatus: commentDb.likesInfo.myStatus,
+		},
 	};
 };
 
