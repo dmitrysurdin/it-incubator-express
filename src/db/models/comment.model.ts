@@ -12,13 +12,12 @@ const commentSchema = new Schema<CommentDbModel>({
 	},
 	createdAt: { type: String, required: true },
 	likesInfo: {
-		likesCount: { type: Number, required: true, default: 0 },
-		dislikesCount: { type: Number, required: true, default: 0 },
+		likesCount: { type: Number, required: true },
+		dislikesCount: { type: Number, required: true },
 		myStatus: {
 			type: String,
 			enum: Object.values(LikeStatus),
 			required: true,
-			default: LikeStatus.None,
 		},
 	},
 });
