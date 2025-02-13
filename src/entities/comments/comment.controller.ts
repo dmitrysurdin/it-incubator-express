@@ -75,12 +75,15 @@ const remove = async (req: Request, res: Response): Promise<void> => {
 	res.sendStatus(204);
 };
 
-const updateLikeStatus = async (req: Request, res: Response): Promise<void> => {
+export const updateLikeStatus = async (req: Request, res: Response): Promise<void> => {
 	const { commentId } = req.params;
 	const { likeStatus } = req.body;
+	const userId = req.userId ?? '';
 
 	if (!Object.values(LikeStatus).includes(likeStatus)) {
-		res.sendStatus(400);
+		res
+			.status(400)
+			.json({ errorsMessages: [{ message: 'Invalid likeStatus', field: 'likeStatus' }] });
 		return;
 	}
 
@@ -90,8 +93,7 @@ const updateLikeStatus = async (req: Request, res: Response): Promise<void> => {
 		return;
 	}
 
-	const isUpdated = await commentServices.updateLikeStatus(commentId, likeStatus);
-
+	const isUpdated = await commentServices.updateLikeStatus(commentId, userId, likeStatus);
 	if (!isUpdated) {
 		res.sendStatus(400);
 		return;

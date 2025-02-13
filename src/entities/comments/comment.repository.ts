@@ -2,6 +2,7 @@ import { CommentClientModel, CommentDbModel } from './comment.types';
 import { CommentModelClass } from '../../db/models';
 import { ObjectId, WithId } from 'mongodb';
 import { LikeStatus } from '../../types/types';
+import { CommentLikeModelClass } from '../../db/models/commentLikeModelClass';
 
 const findById = async (id: string): Promise<WithId<CommentDbModel> | null> => {
 	return CommentModelClass.findById(id).lean();
@@ -39,8 +40,18 @@ const updateLikeStatus = async (
 	return result.matchedCount > 0;
 };
 
+const getUserLikeStatus = async (commentId: string, userId: string): Promise<LikeStatus> => {
+	const comment = await CommentModelClass.findById(commentId).lean();
+	if (!comment) return LikeStatus.None;
+
+	const userLike = await CommentLikeModelClass.findOne({ commentId, userId }).lean();
+
+	return userLike ? userLike.status : LikeStatus.None;
+};
+
 export const commentRepositories = {
 	findById,
+	getUserLikeStatus,
 	update,
 	updateLikeStatus,
 	remove,
