@@ -43,7 +43,7 @@ const updateLikeStatus = async (
 const getUserLikeStatus = async (commentId: string, userId: string): Promise<LikeStatus> => {
 	const userLike = await CommentLikeModelClass.findOne({
 		commentId,
-		userId: new ObjectId(userId),
+		userId,
 	}).lean();
 
 	return userLike ? userLike.status : LikeStatus.None;

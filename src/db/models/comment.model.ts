@@ -7,7 +7,7 @@ const commentSchema = new Schema<CommentDbModel>({
 	postId: { type: String, ref: 'Post', required: true },
 	content: { type: String, required: true },
 	commentatorInfo: {
-		userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+		userId: { type: String, ref: 'User', required: true },
 		userLogin: { type: String, required: true },
 	},
 	createdAt: { type: String, required: true },

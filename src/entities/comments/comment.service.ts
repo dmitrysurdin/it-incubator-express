@@ -54,13 +54,10 @@ const updateLikeStatus = async (
 	if (newStatus === LikeStatus.None) {
 		await CommentLikeModelClass.deleteOne({
 			commentId,
-			userId: new ObjectId(userId),
+			userId,
 		});
 	} else {
-		await CommentLikeModelClass.updateOne(
-			{ commentId, userId: new ObjectId(userId) },
-			{ $set: { status: newStatus } },
-		);
+		await CommentLikeModelClass.updateOne({ commentId, userId }, { $set: { status: newStatus } });
 	}
 
 	return await commentRepositories.updateLikeStatus(commentId, {
