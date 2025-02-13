@@ -1,5 +1,5 @@
 import { mapCommentFromDb } from './comment.helpers';
-import { CommentClientModel, CommentInputModel } from './comment.types';
+import { CommentClientModel } from './comment.types';
 import { commentRepositories } from './comment.repository';
 import { LikeStatus } from '../../types/types';
 import { CommentLikeModelClass } from '../../db/models/commentLikeModelClass';
@@ -38,33 +38,38 @@ const updateLikeStatus = async (
 	const comment = await commentRepositories.findById(commentId);
 	if (!comment) return false;
 
-	const existingLike = await CommentLikeModelClass.findOne({ commentId, userId });
+	const existingStatus = await commentRepositories.getUserLikeStatus(commentId, userId);
 
-	if (existingLike && existingLike.status === newStatus) {
+	if (existingStatus === newStatus) {
 		return true;
 	}
 
 	let updatedLikes = comment.likesInfo.likesCount;
 	let updatedDislikes = comment.likesInfo.dislikesCount;
 
-	if (existingLike) {
-		if (existingLike.status === LikeStatus.Like) updatedLikes -= 1;
-		if (existingLike.status === LikeStatus.Dislike) updatedDislikes -= 1;
-
-		if (newStatus === LikeStatus.None) {
-			await CommentLikeModelClass.deleteOne({ commentId, userId });
-		} else {
-			existingLike.status = newStatus;
-			await existingLike.save();
-		}
-	} else {
-		if (newStatus !== LikeStatus.None) {
-			await new CommentLikeModelClass({ commentId, userId, status: newStatus }).save();
-		}
+	if (existingStatus === LikeStatus.Like) {
+		updatedLikes -= 1;
+	}
+	if (existingStatus === LikeStatus.Dislike) {
+		updatedDislikes -= 1;
 	}
 
-	if (newStatus === LikeStatus.Like) updatedLikes += 1;
-	if (newStatus === LikeStatus.Dislike) updatedDislikes += 1;
+	if (newStatus === LikeStatus.Like) {
+		updatedLikes += 1;
+	}
+	if (newStatus === LikeStatus.Dislike) {
+		updatedDislikes += 1;
+	}
+
+	if (newStatus === LikeStatus.None) {
+		await CommentLikeModelClass.deleteOne({ commentId, userId });
+	} else {
+		await CommentLikeModelClass.updateOne(
+			{ commentId, userId },
+			{ $set: { status: newStatus } },
+			{ upsert: true },
+		);
+	}
 
 	return await commentRepositories.updateLikeStatus(commentId, {
 		likesCount: updatedLikes,

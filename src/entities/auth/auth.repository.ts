@@ -1,6 +1,6 @@
 import { AuthUserDbModel, PasswordRecovery, RegistrationUserDbModel } from './auth.types';
 import {
-	PasswordRecoveryModel,
+	PasswordRecoveryModelClass,
 	RegistrationUserModelClass,
 	RevokedRefreshTokenModelClass,
 	UserModelClass,
@@ -84,17 +84,17 @@ const createPasswordRecoveryRecord = async (
 	recoveryCode: string,
 	expirationDate: Date,
 ): Promise<void> => {
-	await PasswordRecoveryModel.create({ userId, recoveryCode, expirationDate });
+	await PasswordRecoveryModelClass.create({ userId, recoveryCode, expirationDate });
 };
 
 const findPasswordRecoveryByCode = async (
 	recoveryCode: string,
 ): Promise<PasswordRecovery | null> => {
-	return PasswordRecoveryModel.findOne({ recoveryCode }).exec();
+	return PasswordRecoveryModelClass.findOne({ recoveryCode }).exec();
 };
 
 const deletePasswordRecoveryRecordByCode = async (recoveryCode: string): Promise<void> => {
-	await PasswordRecoveryModel.deleteOne({ recoveryCode });
+	await PasswordRecoveryModelClass.deleteOne({ recoveryCode });
 };
 
 export const authRepositories = {

@@ -8,7 +8,7 @@ const PasswordRecoverySchema = new Schema<PasswordRecovery>({
 	expirationDate: { type: Date, required: true },
 });
 
-export const PasswordRecoveryModel = mongoose.model<PasswordRecovery>(
+export const PasswordRecoveryModelClass = mongoose.model<PasswordRecovery>(
 	'PasswordRecovery',
 	PasswordRecoverySchema,
 	SETTINGS.PASSWORD_RECOVERY_COLLECTION_NAME,
