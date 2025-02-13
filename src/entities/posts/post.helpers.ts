@@ -47,10 +47,3 @@ export const mapCommentFromDb = async (
 		},
 	};
 };
-
-export const mapCommentsFromDb = (
-	commentsDb: Array<WithId<CommentForPostDbModel>>,
-	userId?: string,
-): Array<Promise<CommentForPostClientModel>> => {
-	return commentsDb.map((comment) => mapCommentFromDb(comment, userId));
-};

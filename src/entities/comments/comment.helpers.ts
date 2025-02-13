@@ -1,7 +1,16 @@
 import { WithId } from 'mongodb';
-import { CommentClientModel, CommentDbModel } from './comment.types';
+import { LikeStatus } from '../../types/types';
+import { commentRepositories } from './comment.repository';
+import { CommentForPostClientModel, CommentForPostDbModel } from '../posts/post.types';
 
-export const mapCommentFromDb = (commentDb: WithId<CommentDbModel>): CommentClientModel => {
+export const mapCommentFromDb = async (
+	commentDb: WithId<CommentForPostDbModel>,
+	userId?: string,
+): Promise<CommentForPostClientModel> => {
+	const myStatus = userId
+		? await commentRepositories.getUserLikeStatus(commentDb._id.toString(), userId)
+		: LikeStatus.None;
+
 	return {
 		id: commentDb._id.toString(),
 		content: commentDb.content,
@@ -11,9 +20,9 @@ export const mapCommentFromDb = (commentDb: WithId<CommentDbModel>): CommentClie
 			userLogin: commentDb.commentatorInfo.userLogin,
 		},
 		likesInfo: {
-			likesCount: commentDb.likesInfo?.likesCount,
-			dislikesCount: commentDb.likesInfo?.dislikesCount,
-			myStatus: commentDb.likesInfo?.myStatus,
+			likesCount: commentDb.likesInfo.likesCount,
+			dislikesCount: commentDb.likesInfo.dislikesCount,
+			myStatus,
 		},
 	};
 };

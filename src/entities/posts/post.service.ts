@@ -6,7 +6,7 @@ import {
 } from './post.types';
 import { blogRepositories } from '../blogs/blog.repository';
 import { postRepositories } from './post.repository';
-import { mapCommentFromDb, mapCommentsFromDb, mapPostFromDb, mapPostsFromDb } from './post.helpers';
+import { mapCommentFromDb, mapPostFromDb, mapPostsFromDb } from './post.helpers';
 import { authRepositories } from '../auth/auth.repository';
 import { SortOrder } from 'mongoose';
 import { LikeStatus } from '../../types/types';

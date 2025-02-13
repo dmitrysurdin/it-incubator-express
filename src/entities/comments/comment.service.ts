@@ -8,18 +8,7 @@ const findById = async (id: string, userId?: string): Promise<CommentClientModel
 	const commentFromDb = await commentRepositories.findById(id);
 	if (!commentFromDb) return null;
 
-	const myStatus = userId
-		? await commentRepositories.getUserLikeStatus(id, userId)
-		: LikeStatus.None;
-
-	return {
-		...mapCommentFromDb(commentFromDb),
-		likesInfo: {
-			likesCount: commentFromDb.likesInfo.likesCount,
-			dislikesCount: commentFromDb.likesInfo.dislikesCount,
-			myStatus,
-		},
-	};
+	return await mapCommentFromDb(commentFromDb, userId);
 };
 
 const update = async (newCommentData: CommentClientModel): Promise<boolean> => {

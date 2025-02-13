@@ -41,7 +41,7 @@ const getUserById = async (userId: string | null): Promise<boolean | AuthUserCli
 	return mapAuthUserFromDb(user);
 };
 
-const createJWT = (userId: string, expirationDate: string = '10s', deviceId?: string): string => {
+const createJWT = (userId: string, expirationDate: string = '5m', deviceId?: string): string => {
 	const secret = process.env.JWT_SECRET;
 	if (!secret) {
 		throw new Error('JWT_SECRET is not available');
