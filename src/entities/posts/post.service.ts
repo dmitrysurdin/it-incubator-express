@@ -6,7 +6,7 @@ import {
 } from './post.types';
 import { blogRepositories } from '../blogs/blog.repository';
 import { postRepositories } from './post.repository';
-import { mapCommentsFromDb, mapPostFromDb, mapPostsFromDb } from './post.helpers';
+import { mapCommentFromDb, mapCommentsFromDb, mapPostFromDb, mapPostsFromDb } from './post.helpers';
 import { authRepositories } from '../auth/auth.repository';
 import { SortOrder } from 'mongoose';
 import { LikeStatus } from '../../types/types';
@@ -131,18 +131,20 @@ const getAllCommentsForPost = async ({
 	sortDirection,
 	sortBy,
 	postId,
+	userId,
 }: {
 	pageSize?: string;
 	pageNumber?: string;
 	sortDirection?: string;
 	sortBy?: string;
 	postId: string;
+	userId?: string;
 }): Promise<{
-	items: Array<CommentForPostClientModel>;
-	totalCount: number;
 	pagesCount: number;
-	page: number;
 	pageSize: number;
+	page: number;
+	totalCount: number;
+	items: Array<CommentForPostClientModel>;
 }> => {
 	const limit = Number(pageSize) || 10;
 	const validatedPageNumber = Number(pageNumber) || 1;
@@ -161,12 +163,14 @@ const getAllCommentsForPost = async ({
 	});
 	const pagesCount = Math.ceil(totalCount / limit);
 
+	const mappedItems = await Promise.all(items.map((comment) => mapCommentFromDb(comment, userId)));
+
 	return {
 		pagesCount,
 		totalCount,
 		pageSize: limit,
 		page: validatedPageNumber,
-		items: mapCommentsFromDb(items),
+		items: mappedItems,
 	};
 };
 

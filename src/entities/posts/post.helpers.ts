@@ -5,6 +5,8 @@ import {
 	PostClientModel,
 	PostDbModel,
 } from './post.types';
+import { commentRepositories } from '../comments/comment.repository';
+import { LikeStatus } from '../../types/types';
 
 export const mapPostFromDb = (postDb: WithId<PostDbModel>): PostClientModel => {
 	return {
@@ -22,9 +24,14 @@ export const mapPostsFromDb = (postsDb: Array<WithId<PostDbModel>>): Array<PostC
 	return postsDb.map(mapPostFromDb);
 };
 
-export const mapCommentFromDb = (
+export const mapCommentFromDb = async (
 	commentDb: WithId<CommentForPostDbModel>,
-): CommentForPostClientModel => {
+	userId?: string,
+): Promise<CommentForPostClientModel> => {
+	const myStatus = userId
+		? await commentRepositories.getUserLikeStatus(commentDb._id.toString(), userId)
+		: LikeStatus.None;
+
 	return {
 		id: commentDb._id.toString(),
 		content: commentDb.content,
@@ -36,13 +43,14 @@ export const mapCommentFromDb = (
 		likesInfo: {
 			likesCount: commentDb.likesInfo.likesCount,
 			dislikesCount: commentDb.likesInfo.dislikesCount,
-			myStatus: commentDb.likesInfo.myStatus,
+			myStatus,
 		},
 	};
 };
 
 export const mapCommentsFromDb = (
 	commentsDb: Array<WithId<CommentForPostDbModel>>,
-): Array<CommentForPostClientModel> => {
-	return commentsDb.map(mapCommentFromDb);
+	userId?: string,
+): Array<Promise<CommentForPostClientModel>> => {
+	return commentsDb.map((comment) => mapCommentFromDb(comment, userId));
 };

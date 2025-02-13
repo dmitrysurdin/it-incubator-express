@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { postRepositories } from './post.repository';
 import { postServices } from './post.service';
+import { authServices } from '../auth/auth.service';
 
 const create = async (req: Request, res: Response): Promise<void> => {
 	const createdPost = await postServices.create(req.body);
@@ -112,6 +113,10 @@ const getAllCommentsForPost = async (req: Request, res: Response): Promise<void>
 	} = req.query;
 	const postId = req.params.postId;
 
+	const refreshToken = req.cookies.refreshToken;
+	const refreshTokenPayload = await authServices.getTokenPayload(refreshToken);
+	const userId = refreshTokenPayload?.userId;
+
 	const post = await postServices.findById(postId);
 
 	if (!post) {
@@ -126,6 +131,7 @@ const getAllCommentsForPost = async (req: Request, res: Response): Promise<void>
 		sortDirection: query?.sortDirection,
 		sortBy: query?.sortBy,
 		postId: post.id,
+		userId,
 	});
 
 	res.status(200).json(result);
