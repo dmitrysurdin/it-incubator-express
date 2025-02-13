@@ -92,7 +92,7 @@ export const updateLikeStatus = async (req: Request, res: Response): Promise<voi
 		return;
 	}
 
-	const comment = await commentServices.findById(commentId);
+	const comment = await commentServices.findById(commentId, userId);
 	if (!comment) {
 		res.sendStatus(404);
 		return;
