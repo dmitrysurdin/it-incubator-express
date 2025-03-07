@@ -61,7 +61,7 @@ postsRouter.post(
 	postControllers.createCommentForPost,
 );
 postsRouter.put(
-	'/posts/:postId/like-status',
+	'/:postId/like-status',
 	bearerAuthMiddleware,
 	mongoPostIdParamsValidator,
 	postControllers.updateLikeStatus,
