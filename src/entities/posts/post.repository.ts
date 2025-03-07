@@ -4,6 +4,7 @@ import { WithId } from 'mongodb';
 import { CommentModelClass, PostModelClass } from '../../db/models';
 import { PostLikeModelClass } from '../../db/models/postLikeModelClass';
 import { LikeStatus } from '../../types/types';
+import { authRepositories } from '../auth/auth.repository';
 
 const create = async (post: PostDbModel): Promise<string> => {
 	const result = await PostModelClass.create(post);
@@ -93,6 +94,7 @@ const getPostLikesInfo = async (postId: string, userId?: string) => {
 	const dislikesCount = await PostLikeModelClass.countDocuments({
 		postId,
 		status: LikeStatus.Dislike,
+		userId,
 	});
 
 	const newestLikes = await PostLikeModelClass.find({ postId, status: LikeStatus.Like })
@@ -109,7 +111,9 @@ const getPostLikesInfo = async (postId: string, userId?: string) => {
 		myStatus: myLike ? myLike.status : LikeStatus.None,
 		newestLikes: newestLikes.map((like) => ({
 			addedAt: like.createdAt.toISOString(),
-			userId: like.userId.toString(),
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-expect-error
+			userId: like.userId._id.toString(),
 			login: like.login.toString(),
 		})),
 	};
@@ -117,6 +121,7 @@ const getPostLikesInfo = async (postId: string, userId?: string) => {
 
 const updateLikeStatus = async (postId: string, userId: string, newStatus: LikeStatus) => {
 	const existingLike = await PostLikeModelClass.findOne({ postId, userId });
+	const user = await authRepositories.findUserById(userId);
 
 	if (existingLike) {
 		if (newStatus === LikeStatus.None) {
@@ -127,7 +132,7 @@ const updateLikeStatus = async (postId: string, userId: string, newStatus: LikeS
 			await existingLike.save();
 		}
 	} else if (newStatus !== LikeStatus.None) {
-		await new PostLikeModelClass({ postId, userId, status: newStatus }).save();
+		await new PostLikeModelClass({ postId, userId, status: newStatus, login: user?.login }).save();
 	}
 
 	return true;
