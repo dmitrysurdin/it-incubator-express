@@ -8,7 +8,7 @@ const postLikeSchema = new Schema(
 		userId: { type: String, ref: 'User', required: true },
 		login: { type: String, ref: 'User', required: true },
 		status: { type: String, enum: Object.values(LikeStatus), required: true },
-		createdAt: { type: Date, default: Date.now },
+		addedAt: { type: Date, default: Date.now },
 	},
 	{ timestamps: true },
 );

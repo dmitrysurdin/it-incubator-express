@@ -123,17 +123,59 @@ const updateLikeStatus = async (postId: string, userId: string, newStatus: LikeS
 	const existingLike = await PostLikeModelClass.findOne({ postId, userId });
 	const user = await authRepositories.findUserById(userId);
 
+	let shouldRemoveFromNewest = false;
+
 	if (existingLike) {
 		if (newStatus === LikeStatus.None) {
 			await PostLikeModelClass.deleteOne({ postId, userId });
+			shouldRemoveFromNewest = true;
 		} else {
+			if (existingLike.status !== newStatus) {
+				shouldRemoveFromNewest = true;
+			}
 			existingLike.status = newStatus;
 			existingLike.createdAt = new Date();
 			await existingLike.save();
 		}
 	} else if (newStatus !== LikeStatus.None) {
-		await new PostLikeModelClass({ postId, userId, status: newStatus, login: user?.login }).save();
+		await new PostLikeModelClass({
+			postId,
+			userId,
+			status: newStatus,
+			login: user?.login,
+			createdAt: new Date(),
+		}).save();
 	}
+
+	const likesCount = await PostLikeModelClass.countDocuments({ postId, status: LikeStatus.Like });
+	const dislikesCount = await PostLikeModelClass.countDocuments({
+		postId,
+		status: LikeStatus.Dislike,
+	});
+
+	let newestLikes = await PostLikeModelClass.find({ postId, status: LikeStatus.Like })
+		.sort({ createdAt: -1 })
+		.limit(3)
+		.lean();
+
+	if (shouldRemoveFromNewest) {
+		newestLikes = newestLikes.filter((like) => like.userId !== userId);
+	}
+
+	await PostModelClass.updateOne(
+		{ _id: postId },
+		{
+			$set: {
+				'extendedLikesInfo.likesCount': likesCount,
+				'extendedLikesInfo.dislikesCount': dislikesCount,
+				'extendedLikesInfo.newestLikes': newestLikes.map(({ createdAt, userId, login }) => ({
+					addedAt: createdAt,
+					userId,
+					login,
+				})),
+			},
+		},
+	);
 
 	return true;
 };
