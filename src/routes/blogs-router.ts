@@ -6,7 +6,7 @@ import {
 	postForABlogInputValidators,
 } from '../entities/blogs/middlewares';
 import { inputCheckErrorsMiddleware } from '../middlewares/inputCheckErrorsMiddleware';
-import { basicAuthMiddleware } from '../middlewares/authMiddleware';
+import { basicAuthMiddleware, softBearerAuthMiddleware } from '../middlewares/authMiddleware';
 import { mongoIdParamsValidator, paginationQueryValidator } from '../middlewares/validators';
 import { paramsCheckErrorsMiddleware } from '../middlewares/paramsCheckErrorsMiddleware';
 import { searchNameTermValidator } from '../entities/blogs/validators';
@@ -21,6 +21,7 @@ blogsRouter.get(
 );
 blogsRouter.get(
 	'/:blogId/posts',
+	softBearerAuthMiddleware,
 	blogIdParamValidator,
 	paramsCheckErrorsMiddleware,
 	[...paginationQueryValidator, searchNameTermValidator],

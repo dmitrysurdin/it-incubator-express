@@ -18,12 +18,14 @@ export const postsRouter = Router();
 
 postsRouter.get(
 	'/',
+	softBearerAuthMiddleware,
 	[...paginationQueryValidator, searchNameTermValidator],
 	inputCheckErrorsMiddleware,
 	postControllers.getAll,
 );
 postsRouter.get(
 	'/:id',
+	softBearerAuthMiddleware,
 	mongoIdParamsValidator,
 	inputCheckErrorsMiddleware,
 	postControllers.findById,
@@ -57,6 +59,12 @@ postsRouter.post(
 	commentInputValidators,
 	inputCheckErrorsMiddleware,
 	postControllers.createCommentForPost,
+);
+postsRouter.put(
+	'/posts/:postId/like-status',
+	bearerAuthMiddleware,
+	mongoPostIdParamsValidator,
+	postControllers.updateLikeStatus,
 );
 postsRouter.get(
 	'/:postId/comments',

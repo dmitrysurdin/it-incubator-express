@@ -44,6 +44,7 @@ const getAllPostsByBlogId = async (req: Request, res: Response): Promise<void> =
 		searchNameTerm?: string;
 	} = req.query;
 	const blogId = req.params.blogId;
+	const userId = req.userId ?? '';
 
 	const result = await blogServices.getAllPostsByBlogId({
 		blogId,
@@ -52,6 +53,7 @@ const getAllPostsByBlogId = async (req: Request, res: Response): Promise<void> =
 		sortDirection: query?.sortDirection,
 		sortBy: query?.sortBy,
 		searchNameTerm: query?.searchNameTerm,
+		userId,
 	});
 
 	res.status(200).json(result);

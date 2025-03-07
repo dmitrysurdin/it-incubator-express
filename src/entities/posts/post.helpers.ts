@@ -1,28 +1,8 @@
 import { WithId } from 'mongodb';
-import {
-	CommentForPostClientModel,
-	CommentForPostDbModel,
-	PostClientModel,
-	PostDbModel,
-} from './post.types';
+import { CommentForPostClientModel, CommentForPostDbModel, PostDbModel } from './post.types';
 import { commentRepositories } from '../comments/comment.repository';
 import { LikeStatus } from '../../types/types';
-
-export const mapPostFromDb = (postDb: WithId<PostDbModel>): PostClientModel => {
-	return {
-		id: postDb._id.toString(),
-		title: postDb.title,
-		shortDescription: postDb.shortDescription,
-		content: postDb.content,
-		blogId: postDb.blogId,
-		blogName: postDb.blogName,
-		createdAt: postDb.createdAt,
-	};
-};
-
-export const mapPostsFromDb = (postsDb: Array<WithId<PostDbModel>>): Array<PostClientModel> => {
-	return postsDb.map(mapPostFromDb);
-};
+import { postRepositories } from './post.repository';
 
 export const mapCommentFromDb = async (
 	commentDb: WithId<CommentForPostDbModel>,
@@ -45,5 +25,20 @@ export const mapCommentFromDb = async (
 			dislikesCount: commentDb.likesInfo.dislikesCount,
 			myStatus,
 		},
+	};
+};
+
+export const getExtendedPostInfo = async (post: WithId<PostDbModel>, userId?: string) => {
+	const likesInfo = await postRepositories.getPostLikesInfo(post._id.toString(), userId);
+
+	return {
+		id: post._id.toString(),
+		title: post.title,
+		shortDescription: post.shortDescription,
+		content: post.content,
+		blogId: post.blogId,
+		blogName: post.blogName,
+		createdAt: post.createdAt,
+		extendedLikesInfo: likesInfo,
 	};
 };

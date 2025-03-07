@@ -3,8 +3,9 @@ import { blogRepositories } from './blog.repository';
 import { mapBlogFromDb, mapBlogsFromDb } from './blog.helpers';
 import { PostClientModel, PostDbModel } from '../posts/post.types';
 import { postRepositories } from '../posts/post.repository';
-import { mapPostsFromDb } from '../posts/post.helpers';
+import { getExtendedPostInfo } from '../posts/post.helpers';
 import { SortOrder } from 'mongoose';
+import { LikeStatus } from '../../types/types';
 
 const create = async (blog: BlogDbModel): Promise<BlogClientModel> => {
 	const newBlog: BlogDbModel = {
@@ -32,10 +33,19 @@ const createPostForBlog = async (
 		blogId,
 		blogName: blog?.name,
 		createdAt: new Date().toISOString(),
+		extendedLikesInfo: {
+			likesCount: 0,
+			dislikesCount: 0,
+			newestLikes: [],
+		},
 	};
 	const createdId = await postRepositories.create(newPost);
 
-	return { ...newPost, id: createdId };
+	return {
+		...newPost,
+		extendedLikesInfo: { ...newPost.extendedLikesInfo, myStatus: LikeStatus.None },
+		id: createdId,
+	};
 };
 
 const getAllPostsByBlogId = async ({
@@ -45,6 +55,7 @@ const getAllPostsByBlogId = async ({
 	sortDirection,
 	sortBy,
 	searchNameTerm,
+	userId,
 }: {
 	blogId: string;
 	pageSize?: string;
@@ -52,6 +63,7 @@ const getAllPostsByBlogId = async ({
 	sortDirection?: string;
 	sortBy?: string;
 	searchNameTerm?: string;
+	userId?: string;
 }): Promise<{
 	items: Array<PostClientModel>;
 	totalCount: number;
@@ -75,14 +87,19 @@ const getAllPostsByBlogId = async ({
 	const { items, totalCount } = await blogRepositories.getAllPostsByBlogId({
 		...params,
 	});
+
 	const pagesCount = Math.ceil(totalCount / limit);
+
+	const extendedPosts = await Promise.all(
+		items.map(async (post) => getExtendedPostInfo(post, userId)),
+	);
 
 	return {
 		pagesCount,
 		totalCount,
 		pageSize: limit,
 		page: validatedPageNumber,
-		items: mapPostsFromDb(items),
+		items: extendedPosts,
 	};
 };
 

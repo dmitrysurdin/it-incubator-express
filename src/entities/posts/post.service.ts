@@ -6,7 +6,7 @@ import {
 } from './post.types';
 import { blogRepositories } from '../blogs/blog.repository';
 import { postRepositories } from './post.repository';
-import { mapCommentFromDb, mapPostFromDb, mapPostsFromDb } from './post.helpers';
+import { getExtendedPostInfo, mapCommentFromDb } from './post.helpers';
 import { authRepositories } from '../auth/auth.repository';
 import { SortOrder } from 'mongoose';
 import { LikeStatus } from '../../types/types';
@@ -22,11 +22,20 @@ const create = async (post: PostDbModel): Promise<PostClientModel | null> => {
 		...post,
 		blogName: blog?.name,
 		createdAt: new Date().toISOString(),
+		extendedLikesInfo: {
+			likesCount: 0,
+			dislikesCount: 0,
+			newestLikes: [],
+		},
 	};
 
 	const createdId = await postRepositories.create(newPost);
 
-	return { ...newPost, id: createdId };
+	return {
+		...newPost,
+		extendedLikesInfo: { ...newPost.extendedLikesInfo, myStatus: LikeStatus.None },
+		id: createdId,
+	};
 };
 
 const getAll = async ({
@@ -35,19 +44,15 @@ const getAll = async ({
 	sortDirection,
 	sortBy,
 	searchNameTerm,
+	userId,
 }: {
 	pageSize?: string;
 	pageNumber?: string;
 	sortDirection?: string;
 	sortBy?: string;
 	searchNameTerm?: string;
-}): Promise<{
-	items: Array<PostClientModel>;
-	totalCount: number;
-	pagesCount: number;
-	page: number;
-	pageSize: number;
-}> => {
+	userId?: string;
+}) => {
 	const limit = Number(pageSize) || 10;
 	const validatedPageNumber = Number(pageNumber) || 1;
 
@@ -65,23 +70,25 @@ const getAll = async ({
 	});
 	const pagesCount = Math.ceil(totalCount / limit);
 
+	const mappedItems = await Promise.all(items.map((post) => getExtendedPostInfo(post, userId)));
+
 	return {
 		pagesCount,
 		totalCount,
 		pageSize: limit,
 		page: validatedPageNumber,
-		items: mapPostsFromDb(items),
+		items: mappedItems,
 	};
 };
 
-const findById = async (id: string): Promise<PostClientModel | null> => {
+const findById = async (id: string, userId?: string) => {
 	const postFromDb = await postRepositories.findById(id);
 
 	if (!postFromDb) {
 		return null;
 	}
 
-	return mapPostFromDb(postFromDb);
+	return getExtendedPostInfo(postFromDb, userId);
 };
 
 const update = async (id: string, updatedPost: PostDbModel): Promise<boolean> => {

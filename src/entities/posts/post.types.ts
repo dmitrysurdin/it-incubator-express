@@ -7,10 +7,29 @@ export interface PostDbModel {
 	blogId: string;
 	blogName: string;
 	createdAt: string;
+	extendedLikesInfo: {
+		likesCount: number;
+		dislikesCount: number;
+		newestLikes: Array<{
+			addedAt: string;
+			userId: string;
+			login: string;
+		}>;
+	};
 }
 
 export type PostClientModel = {
 	id: string;
+	extendedLikesInfo: {
+		likesCount: number;
+		dislikesCount: number;
+		myStatus: LikeStatus;
+		newestLikes: Array<{
+			addedAt: string;
+			userId: string;
+			login: string;
+		}>;
+	};
 } & PostDbModel;
 
 interface CommentatorInfo {

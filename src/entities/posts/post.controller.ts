@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { postRepositories } from './post.repository';
 import { postServices } from './post.service';
+import { LikeStatus } from '../../types/types';
 
 const create = async (req: Request, res: Response): Promise<void> => {
 	const createdPost = await postServices.create(req.body);
@@ -23,19 +24,23 @@ const getAll = async (req: Request, res: Response): Promise<void> => {
 		searchNameTerm?: string;
 	} = req.query;
 
+	const userId = req.userId ?? '';
+
 	const result = await postServices.getAll({
 		pageSize: query?.pageSize,
 		pageNumber: query?.pageNumber,
 		sortDirection: query?.sortDirection,
 		sortBy: query?.sortBy,
 		searchNameTerm: query?.searchNameTerm,
+		userId,
 	});
 
 	res.status(200).json(result);
 };
 
 export const findById = async (req: Request, res: Response): Promise<void> => {
-	const foundPost = await postServices.findById(req.params.id);
+	const userId = req?.userId ?? '';
+	const foundPost = await postServices.findById(req.params.id, userId);
 
 	if (!foundPost) {
 		res.sendStatus(404);
@@ -134,6 +139,29 @@ const getAllCommentsForPost = async (req: Request, res: Response): Promise<void>
 	res.status(200).json(result);
 };
 
+const updateLikeStatus = async (req: Request, res: Response): Promise<void> => {
+	const { postId } = req.params;
+	const { likeStatus } = req.body;
+	const userId = req.userId ?? '';
+
+	if (!Object.values(LikeStatus).includes(likeStatus)) {
+		res.status(400).json({
+			errorsMessages: [{ message: 'Invalid likeStatus', field: 'likeStatus' }],
+		});
+		return;
+	}
+
+	const post = await postServices.findById(postId);
+	if (!post) {
+		res.sendStatus(404);
+		return;
+	}
+
+	await postRepositories.updateLikeStatus(postId, userId, likeStatus);
+
+	res.sendStatus(204);
+};
+
 export const postControllers = {
 	getAll,
 	findById,
@@ -142,4 +170,5 @@ export const postControllers = {
 	remove,
 	createCommentForPost,
 	getAllCommentsForPost,
+	updateLikeStatus,
 };
