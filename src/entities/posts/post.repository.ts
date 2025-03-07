@@ -94,7 +94,6 @@ const getPostLikesInfo = async (postId: string, userId?: string) => {
 	const dislikesCount = await PostLikeModelClass.countDocuments({
 		postId,
 		status: LikeStatus.Dislike,
-		userId,
 	});
 
 	const newestLikes = await PostLikeModelClass.find({ postId, status: LikeStatus.Like })
